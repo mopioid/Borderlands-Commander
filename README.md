@@ -14,6 +14,8 @@ This is made possible thanks to [c0dycode's CommandInjector](https://github.com/
 
 ## Installation
 
+Begin by [downloading the Borderlands Commander program here](https://github.com/mopioid/Borderlands-Commander/blob/master/Borderlands-Commander.zip).
+
 For Borderlands Commander to be able to interact with the game, you must add a few things to the game's Win32 folder. If you already have CommandInjector installed, you are all set to go and may skip ahead to [using Borderlands Commander](#usage)!
 
 1. Quit the game if it is running.
