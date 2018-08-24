@@ -8,7 +8,7 @@ A Windows program that provides a number of useful functions while playing Borde
 
 See the video below for a brief demonstration.
 
-[![Borderlands Commander Intro](https://i.imgur.com/x7pTyMG.jpg)](https://www.twitch.tv/videos/301213786)
+[![Borderlands Commander Intro](https://i.imgur.com/ZY1nw1z.jpg)](https://youtu.be/ftfeGFUteWI)
 
 This is made possible thanks to [c0dycode's CommandInjector](https://github.com/c0dycode/BL-CommandInjector), via the [BLIO set of methods](https://github.com/mopioid/BLIO). Also thanks to LightChaosman and his [NoDamageNumbers mod](https://github.com/BLCM/BLCMods/blob/master/Borderlands%202%20mods/LightChaosman/NoDamageNumbers.txt), FromDarkHell for various modding tidbits, and JoltzDude139 for expert testing and feedback.
 
