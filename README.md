@@ -8,7 +8,7 @@ A Windows program that provides a number of useful functions while playing Borde
 
 See the video below for a brief demonstration.
 
-[![Borderlands Commander Intro]()]()
+[![Borderlands Commander Intro](https://i.imgur.com/x7pTyMG.jpg)](https://www.twitch.tv/videos/301213786)
 
 This is made possible thanks to [c0dycode's CommandInjector](https://github.com/c0dycode/BL-CommandInjector), via the [BLIO set of methods](https://github.com/mopioid/BLIO). Also thanks to LightChaosman and his [NoDamageNumbers mod](https://github.com/BLCM/BLCMods/blob/master/Borderlands%202%20mods/LightChaosman/NoDamageNumbers.txt), FromDarkHell for various modding tidbits, and JoltzDude139 for expert testing and feedback.
 
@@ -38,7 +38,7 @@ To start using Borderlands Commander, simply launch the program (BL2 or TPS do n
 
 ### Settings
 
-Right clicking the system tray icon provides all of Borderlands Commander's settings. ![Borderlands Commander Settings](https://i.imgur.com/O53L523.png)
+Right clicking the system tray icon provides all of Borderlands Commander's settings. ![Borderlands Commander Settings](https://i.imgur.com/SiXMOIU.png)
 
 The "Show Feedback" option tells Borderlands Commander to print out details in game when you use some of its functions.
 ![Feedback](https://i.imgur.com/2m4RA4x.png)
