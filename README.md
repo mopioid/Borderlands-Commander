@@ -4,6 +4,7 @@ A Windows program that provides a number of useful functions while playing Borde
 * Freezing time.
 * Modifying game speed.
 * Toggling HUD elements.
+* Toggling Third Person camera.
 
 See the video below for a brief demonstration.
 
@@ -39,7 +40,7 @@ To start using Borderlands Commander, simply launch the program (BL2 or TPS do n
 
 Right clicking the system tray icon provides all of Borderlands Commander's settings. ![Borderlands Commander Settings](https://i.imgur.com/O53L523.png)
 
-The "Show Feedback" option tells Borderlands Commander to print out details in game when you use its functions.
+The "Show Feedback" option tells Borderlands Commander to print out details in game when you use some of its functions.
 ![Feedback](https://i.imgur.com/2m4RA4x.png)
 
 The "Symbol Bindings" and "Numpad Bindings" options choose which set of key bindings Borderlands Commander will use. See below.
