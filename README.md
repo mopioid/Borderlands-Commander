@@ -3,6 +3,7 @@ A Windows program that provides a number of useful functions while playing Borde
 * Saving and teleporting your position in the game.
 * Freezing time.
 * Modifying game speed.
+* Quitting without saving.
 * Toggling HUD elements.
 * Toggling Third Person camera.
 
@@ -51,6 +52,7 @@ The "Symbol Bindings" and "Numpad Bindings" options choose which set of key bind
 
 | Key  | Function |
 | ------------- | ------------- |
+| F7 | Toggle All Key Bindings  |
 | \[ | Halve Game Speed  |
 | \] | Double Game Speed  |
 | \\ | Reset Game Speed  |
@@ -60,12 +62,17 @@ The "Symbol Bindings" and "Numpad Bindings" options choose which set of key bind
 | ;  | Toggle HUD  |
 | '  | Toggle Damage Numbers  |
 | =  | Toggle Third Person  |
-| F7 | Toggle All Key Bindings  |
+| Control+Up | Teleport Forward  |
+| Control+Down | Teleport Backward  |
+| Control+Left | Teleport Left  |
+| Control+Right | Teleport Right  |
+| Control+End | Quit Without Saving  |
 
 ### Numpad Bindings
 
 | Key  | Function |
 | ------------- | ------------- |
+| F7 | Toggle All Key Bindings  |
 | 1  | Halve Game Speed  |
 | 2  | Double Game Speed  |
 | 3  | Reset Game Speed  |
@@ -75,4 +82,8 @@ The "Symbol Bindings" and "Numpad Bindings" options choose which set of key bind
 | 7  | Toggle HUD  |
 | 8  | Toggle Damage Numbers  |
 | 9  | Toggle Third Person  |
-| F7 | Toggle All Key Bindings  |
+| Control+Up | Teleport Forward  |
+| Control+Down | Teleport Backward  |
+| Control+Left | Teleport Left  |
+| Control+Right | Teleport Right  |
+| Control+End | Quit Without Saving  |
