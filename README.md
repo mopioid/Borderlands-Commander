@@ -15,7 +15,7 @@ This is made possible thanks to [c0dycode's CommandInjector](https://github.com/
 
 ## Installation
 
-Begin by [downloading the Borderlands Commander program here](https://github.com/mopioid/Borderlands-Commander/blob/master/Borderlands-Commander.zip).
+Begin by [downloading the latest version of `Borderlands-Commander.zip` here](https://github.com/mopioid/Borderlands-Commander/releases).
 
 For Borderlands Commander to be able to interact with the game, you must add a few things to the game's Win32 folder. If you already have CommandInjector installed, you are all set to go and may skip ahead to [using Borderlands Commander](#usage)!
 
@@ -33,11 +33,15 @@ For Borderlands Commander to be able to interact with the game, you must add a f
 
 7. Copy `CommandInjector.dll` (BL2) or `CommandInjectorTPS.dll` (TPS) to the `Plugins` folder you created. ![CommandInjector.dll](https://i.imgur.com/U9OSqcV.png)
 
+8. From the `Borderlands-Commander.zip` folder, copy the `Borderlands Commander.exe` program wherever you would like, then run it! (BL2 or TPS do not need to already be running.)
+
 ## Usage
 
 Borderlands Commander is a simple program that you may store in whatever folder you would like.
 
 To start using Borderlands Commander, simply launch the program (BL2 or TPS do not need to already be running). Upon launch, it will exist as an icon in your system tray. You may now use all of its functionality!
+
+**Special Note for users of Destiny 2 (or other Bungie software):** Borderlands Commander has been claimed to trigger Bungie's anti-cheat detection, resulting in bans. For safety, be sure to close the program by right-clicking on its icon in the taskbar before running any Bungie games.
 
 ### Settings
 
