@@ -8,24 +8,19 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.ComponentModel;
 using static KeyBinding;
+using System.Diagnostics;
+
 
 namespace BorderlandsCommander
 {
 
     public partial class MainWindow : Window
     {
-        // System functions for querying process info.
+        // System functions for listening to foreground window info.
         [DllImport("user32.dll")]
         static extern IntPtr SetWinEventHook(uint eventMin, uint eventMax, IntPtr hmodWinEventProc, WinEventDelegate lpfnWinEventProc, uint idProcess, uint idThread, uint dwFlags);
         [DllImport("user32.dll")]
-        static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
-        [DllImport("user32.dll")]
         static extern IntPtr GetForegroundWindow();
-        [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern IntPtr OpenProcess(uint processAccess, bool bInheritHandle, int processId);
-        [DllImport("kernel32.dll", SetLastError = true)]
-        static extern bool QueryFullProcessImageName([In]IntPtr hProcess, [In]int dwFlags, [Out]StringBuilder lpExeName, ref int lpdwSize);
-
 
         // The delegate type for handling foreground window changes.
         delegate void WinEventDelegate(IntPtr _0, uint _1, IntPtr windowHandle, int _2, int _3, uint _4, uint _5);
@@ -35,17 +30,8 @@ namespace BorderlandsCommander
         private IntPtr Handle;
         private HwndSource source;
 
-
         // The constant used to distinguish our own key events.
         private const int HotkeySignature = 9000;
-
-        /*
-        // A dictionary representing out key bindings, in which the callbacks to be
-        // invoked are keyed by the keycodes they are bound to.
-        private Dictionary<uint, Action> KeyBindings = null;
-        private Dictionary<uint, Action> SymbolBindings = null;
-        private Dictionary<uint, Action> NumpadBindings = null;
-        */
 
         private KeyBinding[] KeyBindings = null;
         private KeyBinding[] SymbolBindings = null;
@@ -249,22 +235,24 @@ namespace BorderlandsCommander
 
         private void HandleForegroundWindow(IntPtr windowHandle)
         {
-            // Get the process for the window that was switched to.
-            GetWindowThreadProcessId(windowHandle, out uint processID);
-            IntPtr process = OpenProcess(0x00001000, false, (int)processID);
+            bool BLIsForeground = false;
 
-            // Get the full path for the process's image.
-            int nameSize = 1024;
-            var nameBuilder = new StringBuilder(nameSize);
-            QueryFullProcessImageName(process, 0, nameBuilder, ref nameSize);
-            var processPath = nameBuilder.ToString(0, nameSize);
-            
-            // Check the name of the image against those of BL2 and TPS.
-            var processName = Path.GetFileNameWithoutExtension(processPath);
+            // Get a combined list of processes matching BL2 and TPS, and
+            // iterate over them.
+            var BLProcesses = new List<Process>(Process.GetProcessesByName("Borderlands2"));
+            BLProcesses.AddRange(Process.GetProcessesByName("BorderlandsPreSequel"));
+            foreach (Process BL2Process in BLProcesses)
+                // If the BL2 or TPS process's main window matches that of the
+                // one which was just brought to the foreground, set our flag.
+                if (BL2Process.MainWindowHandle == windowHandle)
+                {
+                    BLIsForeground = true;
+                    break;
+                }
 
             // If BL2 or TPS were switched to, create the correct BLIO object
             // for said game if we have not already, then register our hotkeys.
-            if (processName.Equals("Borderlands2") || processName.Equals("BorderlandsPreSequel"))
+            if (BLIsForeground)
             {
                 // Bind the F7 key.
                 F7Binding.Register(Handle);
