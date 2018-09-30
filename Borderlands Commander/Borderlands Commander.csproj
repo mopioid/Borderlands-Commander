@@ -88,7 +88,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="..\..\BLIO\BLIO.cs">
+    <Compile Include="..\..\BLIO\BLIO\BLIO.cs">
       <Link>BLIO.cs</Link>
     </Compile>
     <Compile Include="App.xaml.cs">

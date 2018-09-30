@@ -10,6 +10,10 @@ namespace BorderlandsCommander
     {
         protected override void OnStartup(StartupEventArgs e)
         {
+            // Set the current thread to use the invariant culture so that we
+            // use decimal points as per the game when converting doubles.
+            System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
+
             // Create our window, and set it to be all but invisible.
             var window = new MainWindow()
             {
@@ -40,11 +44,6 @@ namespace BorderlandsCommander
                 RunCommand("say {0}", feedback);
         }
 
-        private static string FormatDouble(double argument) {
-            return argument.ToString("0.000000", System.Globalization.CultureInfo.InvariantCulture);
-        }
-
-
         private static bool PlayersOnly = false;
 
         public static void TogglePlayersOnly()
@@ -63,10 +62,8 @@ namespace BorderlandsCommander
         private static double GameSpeed = 1.0;
         private static void SetGameSpeed()
         {
-            string argument = FormatDouble(GameSpeed);
-
             // Format the two game speed set commands to send to the pipe.
-            string command = $"set WorldInfo TimeDilation {argument}|set GameInfo GameSpeed {argument}";
+            string command = $"set WorldInfo TimeDilation {GameSpeed}|set GameInfo GameSpeed {GameSpeed}";
             // Format the string to be printed as feedback to the user.
             string feedback = $"Game speed: {GameSpeed}";
             // Send the command to the pipe.
@@ -107,7 +104,7 @@ namespace BorderlandsCommander
                 goto Failed;
 
             // Get the object for the pawn from the player controller.
-            var pawn = new BLObject(controller["Pawn"] as string);
+            var pawn = controller["Pawn"] as BLObject;
             // If we could not, stop and present an error.
             if (pawn == null || pawn.Class != "WillowPlayerPawn")
                 goto Failed;
@@ -141,7 +138,7 @@ namespace BorderlandsCommander
                 goto Failed;
 
             // Get the object for the pawn from the player controller.
-            var pawn = new BLObject(controller["Pawn"] as string);
+            var pawn = controller["Pawn"] as BLObject;
             // If we could not, stop and present an error.
             if (pawn == null || pawn.Class != "WillowPlayerPawn")
                 goto Failed;
@@ -246,7 +243,7 @@ namespace BorderlandsCommander
             }
 
             public string FormatLocation() {
-                return $"(X={FormatDouble(X)},Y={FormatDouble(Y)},Z={FormatDouble(Z)})";
+                return $"(X={X},Y={Y},Z={Z})";
             }
         }
 
@@ -257,7 +254,7 @@ namespace BorderlandsCommander
             if (controller == null)
                 goto Failed;
 
-            var pawn = new BLObject(controller["Pawn"] as string);
+            var pawn = controller["Pawn"] as BLObject;
             if (pawn == null || pawn.Class != "WillowPlayerPawn")
                 goto Failed;
 
@@ -283,7 +280,7 @@ namespace BorderlandsCommander
             if (controller == null)
                 goto Failed;
 
-            var pawn = new BLObject(controller["Pawn"] as string);
+            var pawn = controller["Pawn"] as BLObject;
             if (pawn == null || pawn.Class != "WillowPlayerPawn")
                 goto Failed;
 
@@ -301,7 +298,5 @@ namespace BorderlandsCommander
         Failed:
             RunCommand("say Failed to move position");
         }
-
-
     }
 }
