@@ -17,6 +17,8 @@ This is made possible thanks to [c0dycode's CommandInjector](https://github.com/
 
 Begin by [downloading the latest version of `Borderlands-Commander.zip` here](https://github.com/mopioid/Borderlands-Commander/releases).
 
+Your game must be hexedited for mods to be able to make changes in game. If you have not done this previously, [Borderlands Community Mod Manager](https://github.com/BLCM/BLCMods/wiki/Borderlands-Community-Mod-Manager) will do it for you.
+
 For Borderlands Commander to be able to interact with the game, you must add a few things to the game's Win32 folder. If you already have CommandInjector installed, you are all set to go and may skip ahead to [using Borderlands Commander](#usage)!
 
 1. Quit the game if it is running.
