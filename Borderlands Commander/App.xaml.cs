@@ -234,12 +234,12 @@ namespace BorderlandsCommander
                 if (!locationMatch.Success)
                     return;
 
-                X = double.Parse(locationMatch.Groups[1].Value);
-                Y = double.Parse(locationMatch.Groups[2].Value);
-                Z = double.Parse(locationMatch.Groups[3].Value);
+                X = double.Parse(locationMatch.Groups[1].Value, System.Globalization.NumberStyles.AllowDecimalPoint, System.Globalization.NumberFormatInfo.InvariantInfo);
+                Y = double.Parse(locationMatch.Groups[2].Value, System.Globalization.NumberStyles.AllowDecimalPoint, System.Globalization.NumberFormatInfo.InvariantInfo);
+                Z = double.Parse(locationMatch.Groups[3].Value, System.Globalization.NumberStyles.AllowDecimalPoint, System.Globalization.NumberFormatInfo.InvariantInfo);
 
-                Pitch = double.Parse(rotationMatch.Groups[1].Value) / RadiansCoversion;
-                Yaw   = double.Parse(rotationMatch.Groups[2].Value) / RadiansCoversion;
+                Pitch = double.Parse(rotationMatch.Groups[1].Value, System.Globalization.NumberStyles.AllowDecimalPoint, System.Globalization.NumberFormatInfo.InvariantInfo) / RadiansCoversion;
+                Yaw   = double.Parse(rotationMatch.Groups[2].Value, System.Globalization.NumberStyles.AllowDecimalPoint, System.Globalization.NumberFormatInfo.InvariantInfo) / RadiansCoversion;
             }
 
             public string FormatLocation() {
