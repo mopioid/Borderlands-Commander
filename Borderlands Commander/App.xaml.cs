@@ -2,17 +2,27 @@
 using System.Windows;
 using System.Text.RegularExpressions;
 using static BLIO;
-
+using System.Globalization;
 
 namespace BorderlandsCommander
 {
     public partial class App : Application
     {
+        public static CultureInfo ci { get; set; }
+
         protected override void OnStartup(StartupEventArgs e)
         {
             // Set the current thread to use the invariant culture so that we
             // use decimal points as per the game when converting doubles.
             System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
+            var currentCulture = System.Threading.Thread.CurrentThread.CurrentCulture.Name;
+            ci = new CultureInfo(currentCulture)
+            {
+                NumberFormat = { NumberDecimalSeparator = "." }
+            };
+
+            System.Threading.Thread.CurrentThread.CurrentCulture = ci;
+            System.Threading.Thread.CurrentThread.CurrentUICulture = ci;
 
             // Create our window, and set it to be all but invisible.
             var window = new MainWindow()
@@ -24,8 +34,6 @@ namespace BorderlandsCommander
             window.Show();
             window.Hide();
         }
-
-
         public static bool ShowFeedback = false;
 
         public static void PerformAction(string command, string feedback)
@@ -58,14 +66,16 @@ namespace BorderlandsCommander
             PerformAction("set WorldInfo bPlayersOnly " + argument, feedback);
         }
 
-
         private static double GameSpeed = 1.0;
+
         private static void SetGameSpeed()
         {
             // Format the two game speed set commands to send to the pipe.
-            string command = $"set WorldInfo TimeDilation {GameSpeed}|set GameInfo GameSpeed {GameSpeed}";
+            string command = $"set WorldInfo TimeDilation " +
+                double.Parse(GameSpeed.ToString(), NumberStyles.AllowDecimalPoint, ci).ToString() +
+                $"|set GameInfo GameSpeed {double.Parse(GameSpeed.ToString(), NumberStyles.AllowDecimalPoint, ci)}";
             // Format the string to be printed as feedback to the user.
-            string feedback = $"Game speed: {GameSpeed}";
+            string feedback = $"Game speed: {double.Parse(GameSpeed.ToString(), NumberStyles.AllowDecimalPoint, ci)}";
             // Send the command to the pipe.
             PerformAction(command, feedback);
         }
@@ -234,15 +244,16 @@ namespace BorderlandsCommander
                 if (!locationMatch.Success)
                     return;
 
-                X = double.Parse(locationMatch.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture);
-                Y = double.Parse(locationMatch.Groups[2].Value, System.Globalization.CultureInfo.InvariantCulture);
-                Z = double.Parse(locationMatch.Groups[3].Value, System.Globalization.CultureInfo.InvariantCulture);
+                X = double.Parse(locationMatch.Groups[1].Value, NumberStyles.AllowDecimalPoint, ci);
+                Y = double.Parse(locationMatch.Groups[2].Value, NumberStyles.AllowDecimalPoint, ci);
+                Z = double.Parse(locationMatch.Groups[3].Value, NumberStyles.AllowDecimalPoint, ci);
 
-                Pitch = double.Parse(rotationMatch.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture) / RadiansCoversion;
-                Yaw   = double.Parse(rotationMatch.Groups[2].Value, System.Globalization.CultureInfo.InvariantCulture) / RadiansCoversion;
+                Pitch = double.Parse(rotationMatch.Groups[1].Value, NumberStyles.AllowDecimalPoint, ci) / RadiansCoversion;
+                Yaw = double.Parse(rotationMatch.Groups[2].Value, NumberStyles.AllowDecimalPoint, ci) / RadiansCoversion;
             }
 
-            public string FormatLocation() {
+            public string FormatLocation()
+            {
                 return $"(X={X},Y={Y},Z={Z})";
             }
         }
@@ -269,7 +280,7 @@ namespace BorderlandsCommander
             PerformAction($"set {pawn.Name} Location {position.FormatLocation()}", null);
 
             return;
-        Failed:
+            Failed:
             RunCommand("say Failed to move position");
         }
 
@@ -295,7 +306,7 @@ namespace BorderlandsCommander
             PerformAction($"set {pawn.Name} Location {position.FormatLocation()}", null);
 
             return;
-        Failed:
+            Failed:
             RunCommand("say Failed to move position");
         }
     }
