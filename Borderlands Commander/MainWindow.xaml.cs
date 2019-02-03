@@ -9,13 +9,15 @@ using System.Reflection;
 using System.ComponentModel;
 using static KeyBinding;
 using System.Diagnostics;
-
+using System.Runtime.Serialization.Json;
 
 namespace BorderlandsCommander
 {
 
     public partial class MainWindow : Window
     {
+        public static MainWindow mainWindow;
+
         // System functions for listening to foreground window info.
         [DllImport("user32.dll")]
         static extern IntPtr SetWinEventHook(uint eventMin, uint eventMax, IntPtr hmodWinEventProc, WinEventDelegate lpfnWinEventProc, uint idProcess, uint idThread, uint dwFlags);
@@ -36,14 +38,16 @@ namespace BorderlandsCommander
         private KeyBinding[] KeyBindings = null;
         private KeyBinding[] SymbolBindings = null;
         private KeyBinding[] NumpadBindings = null;
+        private KeyBinding[] CustomBindings = null;
         private KeyBinding F7Binding;
 
         // Our icon in the system tray.
-        private System.Windows.Forms.NotifyIcon NotifyIcon = null;
-        private System.Windows.Forms.MenuItem FeedbackMenuItem = null;
-        private System.Windows.Forms.MenuItem SymbolBindingsMenuItem = null;
-        private System.Windows.Forms.MenuItem NumpadBindingsMenuItem = null;
-
+        private System.Windows.Forms.NotifyIcon NotifyIcon              = null;
+        private System.Windows.Forms.MenuItem FeedbackMenuItem          = null;
+        private System.Windows.Forms.MenuItem SymbolBindingsMenuItem    = null;
+        private System.Windows.Forms.MenuItem NumpadBindingsMenuItem    = null;
+        private System.Windows.Forms.MenuItem CustomBindingsMenuItem    = null;
+        private System.Windows.Forms.MenuItem KeyBindingsUIMenuItem     = null;
 
         protected override void OnInitialized(EventArgs e)
         {
@@ -79,15 +83,47 @@ namespace BorderlandsCommander
 
             NotifyIcon.ContextMenu.MenuItems.Add("-");
 
+            CustomBindingsMenuItem = new System.Windows.Forms.MenuItem();
+            CustomBindingsMenuItem.Text = "Custom Bindings";
+            CustomBindingsMenuItem.Click += OnNotifyMenuBindingsClicked;
+            CustomBindingsMenuItem.RadioCheck = true;
+            NotifyIcon.ContextMenu.MenuItems.Add(CustomBindingsMenuItem);
+
+            KeyBindingsUIMenuItem = new System.Windows.Forms.MenuItem();
+            KeyBindingsUIMenuItem.Text = "Keybindings";
+            KeyBindingsUIMenuItem.Click += OnNotifyKeybindingsClicked;
+            NotifyIcon.ContextMenu.MenuItems.Add(KeyBindingsUIMenuItem);
+
+            NotifyIcon.ContextMenu.MenuItems.Add("-");
+
             var exitMenu = new System.Windows.Forms.MenuItem();
             exitMenu.Text = "Exit";
             exitMenu.Click += OnNotifyMenuExitClicked;
             NotifyIcon.ContextMenu.MenuItems.Add(exitMenu);
 
             Loaded += (_0, _1) => NotifyIcon.Visible = true;
+            mainWindow = this;
         }
 
+        private void OnNotifyKeybindingsClicked(object sender, EventArgs e)
+        {
+            SymbolBindingsMenuItem.Checked = false;
+            NumpadBindingsMenuItem.Checked = false;
+            CustomBindingsMenuItem.Checked = true;
 
+            Properties.Settings.Default.NumpadBindings = false;
+            Properties.Settings.Default.CustomBindings = true;
+
+            using (Forms.KeybindingsUI keybindingsUI = new Forms.KeybindingsUI())
+            {
+                var result = keybindingsUI.ShowDialog();
+                if (result == System.Windows.Forms.DialogResult.OK)
+                {
+                    LoadBindingConfiguration();
+                    KeyBindings = CustomBindings;
+                }
+            }
+        }
 
         // Perform our own initilization when the window initilizes. 
         protected override void OnSourceInitialized(EventArgs e)
@@ -139,15 +175,33 @@ namespace BorderlandsCommander
                 controlEndBinding,
             };
 
+            // Load Custom Bindings
+            LoadBindingConfiguration();
+
             if (Properties.Settings.Default.NumpadBindings)
             {
                 NumpadBindingsMenuItem.Checked = true;
+                SymbolBindingsMenuItem.Checked = false;
+                CustomBindingsMenuItem.Checked = false;
+
                 // Set up the dictionary entires for our keybindings and their callbacks.
                 KeyBindings = NumpadBindings;
             }
+            else if (Properties.Settings.Default.CustomBindings)
+            {
+                NumpadBindingsMenuItem.Checked = false;
+                SymbolBindingsMenuItem.Checked = false;
+                CustomBindingsMenuItem.Checked = true;
+
+                // Set up the dictionary entires for our keybindings and their callbacks.
+                KeyBindings = CustomBindings;
+            }
             else
             {
+                NumpadBindingsMenuItem.Checked = false;
                 SymbolBindingsMenuItem.Checked = true;
+                CustomBindingsMenuItem.Checked = false;
+
                 // Set up the dictionary entires for our keybindings and their callbacks.
                 KeyBindings = SymbolBindings;
             }
@@ -167,6 +221,44 @@ namespace BorderlandsCommander
             HandleForegroundWindow(GetForegroundWindow());
         }
 
+        private void LoadBindingConfiguration()
+        {
+            var appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var appfolder = Path.Combine(appdata, "BorderlandsCommander");
+            var filepath = Path.Combine(appfolder, "CustomBindings.json");
+            if (!Directory.Exists(appfolder))
+                Directory.CreateDirectory(appfolder);
+            if (!File.Exists(filepath))
+            {
+                File.Create(filepath);
+                Properties.Settings.Default.CustomBindings = false;
+                Properties.Settings.Default.Save();
+            }
+            if (!File.Exists(Path.Combine(appfolder, "CustomCommandBindings.json")))
+            {
+                File.Create(Path.Combine(appfolder, "CustomCommandBindings.json"));
+                Properties.Settings.Default.CustomBindings = false;
+                Properties.Settings.Default.Save();
+            }
+            else if(Properties.Settings.Default.CustomBindings)
+            {
+                var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                var applicationData = Path.Combine(appData, "BorderlandsCommander");
+
+                var configpath = Path.Combine(appData, "BorderlandsCommander", "CustomBindings.json");
+                var customCommandBindingsPath = Path.Combine(appfolder, "CustomCommandBindings.json");
+
+                MemoryStream ms = new MemoryStream(File.ReadAllBytes(configpath));
+                DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(List<KeybindInfo>));
+                var customBindingsList = ser.ReadObject(ms) as List<KeybindInfo>;
+                ms.Close();
+                ms = new MemoryStream(File.ReadAllBytes(customCommandBindingsPath));
+                ser = new DataContractJsonSerializer(typeof(List<KeybindInfo>));
+
+                customBindingsList.AddRange(ser.ReadObject(ms) as List<KeybindInfo>);
+                CustomBindings = customBindingsList.ToKeyBindings();
+            }
+        }
 
         private void OnNotifyIconClicked(object sender, EventArgs e)
         {
@@ -197,8 +289,10 @@ namespace BorderlandsCommander
 
                 SymbolBindingsMenuItem.Checked = true;
                 NumpadBindingsMenuItem.Checked = false;
+                CustomBindingsMenuItem.Checked = false;
 
                 Properties.Settings.Default.NumpadBindings = false;
+                Properties.Settings.Default.CustomBindings = false;
 
                 foreach (KeyBinding keyBinding in KeyBindings)
                     keyBinding.Unregister(Handle);
@@ -210,15 +304,45 @@ namespace BorderlandsCommander
                 if (NumpadBindingsMenuItem.Checked)
                     return;
 
-                NumpadBindingsMenuItem.Checked = true;
                 SymbolBindingsMenuItem.Checked = false;
+                NumpadBindingsMenuItem.Checked = true;
+                CustomBindingsMenuItem.Checked = false;
 
                 Properties.Settings.Default.NumpadBindings = true;
+                Properties.Settings.Default.CustomBindings = false;
 
                 foreach (KeyBinding keyBinding in KeyBindings)
                     keyBinding.Unregister(Handle);
 
                 KeyBindings = NumpadBindings;
+            }
+            else if (sender == CustomBindingsMenuItem)
+            {
+                if (CustomBindingsMenuItem.Checked)
+                    return;
+
+                SymbolBindingsMenuItem.Checked = false;
+                NumpadBindingsMenuItem.Checked = false;
+                CustomBindingsMenuItem.Checked = true;
+
+                Properties.Settings.Default.CustomBindings = true;
+                Properties.Settings.Default.NumpadBindings = false;
+
+                foreach (KeyBinding keyBinding in KeyBindings)
+                    keyBinding.Unregister(Handle);
+
+                if (CustomBindings == null)
+                    using (Forms.KeybindingsUI keybindingsUI = new Forms.KeybindingsUI())
+                    {
+                        var result = keybindingsUI.ShowDialog();
+                        if(result == System.Windows.Forms.DialogResult.OK)
+                        {
+                            LoadBindingConfiguration();
+                            KeyBindings = CustomBindings;
+                        }
+                    }
+                LoadBindingConfiguration();
+                KeyBindings = CustomBindings;
             }
 
             foreach (KeyBinding keyBinding in KeyBindings)
@@ -302,7 +426,7 @@ namespace BorderlandsCommander
 
 
         private bool HotkeysEnabled = true;
-        private void ToggleHotkeys()
+        public void ToggleHotkeys()
         {
             HotkeysEnabled = !HotkeysEnabled;
 

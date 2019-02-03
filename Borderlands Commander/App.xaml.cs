@@ -249,7 +249,9 @@ namespace BorderlandsCommander
                 Z = double.Parse(locationMatch.Groups[3].Value, NumberStyles.AllowDecimalPoint, ci);
 
                 Pitch = double.Parse(rotationMatch.Groups[1].Value, NumberStyles.AllowDecimalPoint, ci) / RadiansCoversion;
-                Yaw = double.Parse(rotationMatch.Groups[2].Value, NumberStyles.AllowDecimalPoint, ci) / RadiansCoversion;
+
+                // Removed "NumberStyles.AllowDecimalPoint" causes FormatException???
+                Yaw = double.Parse(rotationMatch.Groups[2].Value, ci) / RadiansCoversion;
             }
 
             public string FormatLocation()

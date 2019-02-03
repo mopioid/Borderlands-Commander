@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
 public struct KeyBinding
 {
@@ -45,6 +46,8 @@ public struct KeyBinding
 
     public readonly int ID;
     public readonly Key BoundKey;
+    public readonly Keys CustomKey;
+    public readonly uint CustomModifier;
     public readonly Modifier BoundModifier;
     public readonly Action Method;
 
@@ -52,7 +55,19 @@ public struct KeyBinding
     {
         ID = NextID++;
         BoundKey = key;
+        CustomKey = Keys.None;
+        CustomModifier = 0;
         BoundModifier = modifier;
+        Method = method;
+    }
+
+    public KeyBinding(Keys keys, uint modifier, Action method)
+    {
+        ID = NextID++;
+        CustomKey = keys;
+        BoundKey = 0;
+        BoundModifier = 0;
+        CustomModifier = modifier;
         Method = method;
     }
 
@@ -60,6 +75,8 @@ public struct KeyBinding
     {
         ID = NextID++;
         BoundKey = key;
+        CustomKey = Keys.None;
+        CustomModifier = 0;
         BoundModifier = 0x0;
         Method = method;
     }
@@ -68,7 +85,10 @@ public struct KeyBinding
     private static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
 
     public void Register(IntPtr handle) {
-        RegisterHotKey(handle, ID, (uint)BoundModifier, (uint)BoundKey);
+        if(CustomModifier == 0 && CustomKey == Keys.None)
+            RegisterHotKey(handle, ID, (uint)BoundModifier, (uint)BoundKey);
+        else
+            RegisterHotKey(handle, ID, (uint)CustomModifier, (uint)CustomKey);
     }
 
     [DllImport("user32.dll")]
