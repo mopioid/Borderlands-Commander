@@ -46,5 +46,17 @@ namespace BorderlandsCommander.Properties {
                 this["ShowFeedback"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool CustomBindings {
+            get {
+                return ((bool)(this["CustomBindings"]));
+            }
+            set {
+                this["CustomBindings"] = value;
+            }
+        }
     }
 }
