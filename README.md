@@ -1,5 +1,5 @@
 # Borderlands Commander
-A Windows program that provides a number of useful functions while playing Borderlands 2 and TPS:
+An [UnrealEngine PythonSDK](https://github.com/bl-sdk/PythonSDK) mod for Borderlands 2 and Borderlands: The Pre-Sequel! that provides a number of useful functions while in game:
 * Saving and teleporting your position in the game.
 * Freezing time.
 * Modifying game speed.
@@ -11,85 +11,34 @@ See the video below for a brief demonstration.
 
 [![Borderlands Commander Intro](https://i.imgur.com/ZY1nw1z.jpg)](https://youtu.be/ftfeGFUteWI)
 
-This is made possible thanks to [c0dycode's CommandInjector](https://github.com/c0dycode/BL-CommandInjector), via the [BLIO set of methods](https://github.com/mopioid/BLIO). Also thanks to LightChaosman and his [NoDamageNumbers mod](https://github.com/BLCM/BLCMods/blob/master/Borderlands%202%20mods/LightChaosman/NoDamageNumbers.txt), FromDarkHell for various modding tidbits, and JoltzDude139 for expert testing and feedback.
+This is almost entirely made possible thanks to the work of the UnrealEngine PythonSDK team. Special thanks to LightChaosman and his [NoDamageNumbers mod](https://github.com/BLCM/BLCMods/blob/master/Borderlands%202%20mods/LightChaosman/NoDamageNumbers.txt), FromDarkHell for various modding tidbits, JoltzDude139 for expert testing and feedback, and c0dycode for originally making Commander possible via [CommandInjector](https://github.com/c0dycode/BL-CommandInjector).
 
 ## Installation
 
-Begin by [downloading the latest version of `Borderlands-Commander.zip` here](https://github.com/mopioid/Borderlands-Commander/releases).
+Begin by [downloading the latest version of `BorderlandsCommander.zip` here](https://github.com/mopioid/Borderlands-Commander/releases).
 
-Your game must be hexedited for mods to be able to make changes in game. If you have not done this previously, [Borderlands Community Mod Manager](https://github.com/BLCM/BLCMods/wiki/Borderlands-Community-Mod-Manager) will do it for you.
+1. [Install UnrealEngine PythonSDK](https://github.com/bl-sdk/PythonSDK#installation) if you have not already.
 
-For Borderlands Commander to be able to interact with the game, you must add a few things to the game's Win32 folder. If you already have CommandInjector installed, you are all set to go and may skip ahead to [using Borderlands Commander](#usage)!
+2. Locate the SDK's `Mods` folder (located in the `Win32` folder of the `Binaries` folder of your BL2/TPS installation).
 
-1. Quit the game if it is running.
-2. [Download the latest version of `ddraw.dll` (A.K.A. PluginLoader).](https://github.com/c0dycode/BorderlandsPluginLoader/releases)
-3. Locate the `Win32` folder within your game's `Binaries` folder. ![Win32 folder](https://i.imgur.com/t6OI06l.png)
+3. Copy the `Commander` folder from `BorderlandsCommander.zip` to the SDK's `Mods` folder.
 
-4. Copy `ddraw.dll` to the `Win32` folder. ![ddrawl.dll](https://i.imgur.com/FHfiSqg.png)
-
-5. In the `Win32` folder, create a folder called `Plugins`. ![Plugins folder](https://i.imgur.com/CDdoKDs.png)
-
-7. [Download the latest version of CommandInjector.](https://github.com/c0dycode/BL-CommandInjector/blob/master/CommandInjector.zip)
-
-6. Open the `CommandInjector.zip` file to view its contents. ![CommandInjector.zip](https://i.imgur.com/r1I3b26.png)
-
-7. Copy `CommandInjector.dll` (BL2) or `CommandInjectorTPS.dll` (TPS) to the `Plugins` folder you created. ![CommandInjector.dll](https://i.imgur.com/U9OSqcV.png)
-
-8. From the `Borderlands-Commander.zip` folder, copy the `Borderlands Commander.exe` program wherever you would like, then run it! (BL2 or TPS do not need to already be running.)
+4. Launch the game, select "Mods" from the main menu, then select "Commander" to enable it.
 
 ## Usage
 
-Borderlands Commander is a simple program that you may store in whatever folder you would like.
+Borderlands Commander is operated using key inputs during gameplay. These key bindings may be configured in game via the settings menu (OPTIONS > KEYBOARD/MOUSE > MODDED KEY BINDINGS). See table for description of functionality:
 
-To start using Borderlands Commander, simply launch the program (BL2 or TPS do not need to already be running). Upon launch, it will exist as an icon in your system tray. You may now use all of its functionality!
-
-**Special Note for users of Destiny 2 (or other Bungie software):** Borderlands Commander has been claimed to trigger Bungie's anti-cheat detection, resulting in bans. For safety, be sure to close the program by right-clicking on its icon in the taskbar before running any Bungie games.
-
-### Settings
-
-Right clicking the system tray icon provides all of Borderlands Commander's settings. ![Borderlands Commander Settings](https://i.imgur.com/SiXMOIU.png)
-
-The "Show Feedback" option tells Borderlands Commander to print out details in game when you use some of its functions.
-![Feedback](https://i.imgur.com/2m4RA4x.png)
-
-The "Symbol Bindings" and "Numpad Bindings" options choose which set of key bindings Borderlands Commander will use. See below.
-
-### Symbol Bindings
-
-| Key  | Function |
-| ------------- | ------------- |
-| F7 | Toggle All Key Bindings  |
-| \[ | Halve Game Speed  |
-| \] | Double Game Speed  |
-| \\ | Reset Game Speed  |
-| ,  | Restore position  |
-| .  | Save position  |
-| /  | Toggle Players Only Mode  |
-| ;  | Toggle HUD  |
-| '  | Toggle Damage Numbers  |
-| =  | Toggle Third Person  |
-| Control+Up | Teleport Forward  |
-| Control+Down | Teleport Backward  |
-| Control+Left | Teleport Left  |
-| Control+Right | Teleport Right  |
-| Control+End | Quit Without Saving  |
-
-### Numpad Bindings
-
-| Key  | Function |
-| ------------- | ------------- |
-| F7 | Toggle All Key Bindings  |
-| 1  | Halve Game Speed  |
-| 2  | Double Game Speed  |
-| 3  | Reset Game Speed  |
-| 4  | Restore position  |
-| 5  | Save position  |
-| 6  | Toggle Players Only Mode  |
-| 7  | Toggle HUD  |
-| 8  | Toggle Damage Numbers  |
-| 9  | Toggle Third Person  |
-| Control+Up | Teleport Forward  |
-| Control+Down | Teleport Backward  |
-| Control+Left | Teleport Left  |
-| Control+Right | Teleport Right  |
-| Control+End | Quit Without Saving  |
+| Action                | Description                                                                       |
+|-----------------------|-----------------------------------------------------------------------------------|
+| Halve Game Speed      | Decreases the speed of the game to 1/2, then 1/4, etc., to a minimum of 1/32      |
+| Double Game Speed     | Increases the speed of the game to x2, then x4, etc., to a maximum of x32         |
+| Reset Game Speed      | Resets the speed of the game to default.                                          |
+| Save Position         | Saves your coordinates within the current map.                                    |
+| Restore Position      | Teleports you to the set of previously saved coordinates within the current map.  |
+| Teleport Forward      | Teleports you a short distance forward (including through objects).               |
+| Toggle World Freeze   | Halts the game, while still allowing you to move around freely.                   |
+| Toggle HUD            | Enables/Disables the HUD overlay.                                                 |
+| Toggle Damage Numbers | Enables/Disables damage numbers being displayed when damaging enemies.            |
+| Toggle Third Person   | Switches between first person and third person camera modes.                      |
+| Quit Without Saving   | Leave the current game session without saving, reverting to the last saved state. |
