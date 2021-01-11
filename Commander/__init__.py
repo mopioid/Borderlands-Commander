@@ -174,7 +174,7 @@ _KeybindActions = {
 
 class Commander(ModMenu.SDKMod):
 	Name: str = "Commander"
-	Version: str = "2.0"
+	Version: str = "2.0.1"
 	Description: str = "Perform various changes to the game using key bindings."
 	Author: str = "mopioid"
 	Types: ModTypes = ModTypes.Gameplay
