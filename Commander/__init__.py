@@ -85,10 +85,10 @@ _NoDamageNumberEmitters[1] = None
 
 def _ToggleDamageNumbers():
 	if _ModInstance.DamageNumbers.CurrentValue:
-		_DamageNumberEmitterObject.Emitters = _NoDamageNumberEmitters
+		_DamageNumberParticleSystem.Emitters = _NoDamageNumberEmitters
 		_Feedback("Damage Numbers: Off")
 	else:
-		_DamageNumberEmitterObject.Emitters = _DamageNumberEmitters
+		_DamageNumberParticleSystem.Emitters = _DamageNumberEmitters
 		_Feedback("Damage Numbers: On")
 
 	_ModInstance.DamageNumbers.CurrentValue = not _ModInstance.DamageNumbers.CurrentValue
@@ -202,10 +202,11 @@ class Commander(ModMenu.SDKMod):
 	def __init__(self):
 		ModMenu.LoadModSettings(self)
 		if not self.DamageNumbers.CurrentValue:
-			_DamageNumberEmitterObject.Emitters = _NoDamageNumberEmitters
+			_DamageNumberParticleSystem.Emitters = _NoDamageNumberEmitters
 
 	def GameInputPressed(self, input):
 		if input.Name in _KeybindActions:
 			_KeybindActions[input.Name]()
 
-Mods.append(Commander())
+_ModInstance = Commander()
+Mods.append(_ModInstance)
