@@ -25,12 +25,9 @@ _DefaultGameInfo = FindObject("WillowCoopGameInfo", "WillowGame.Default__WillowC
 # their TimeDilation from it.
 
 
-def _Feedback(feedback, playerID = None):
+def _Feedback(feedback):
 	"""Presents a "training" message to the user with the given string."""
-
 	playerController = _GetPlayerController()
-	if playerID is not None and playerID is not _GetPlayerID(playerController):
-		return
 
 	# Get the graphics object for our player controller's HUD.
 	HUDMovie = playerController.GetHUDMovie()
