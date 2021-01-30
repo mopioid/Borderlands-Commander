@@ -1,14 +1,22 @@
 from unrealsdk import *
 from Mods import ModMenu
 
+from Mods.ModMenu import ServerMethod
+from Mods.ModMenu import ClientMethod
+
 from typing import List
 import math
 from fractions import Fraction
 
 
 def _GetPlayerController():
-	"""Return the current WillowPlayerController object for the local player."""
 	return GetEngine().GamePlayers[0].Actor
+
+def _GetMapName():
+	return GetEngine().GetCurrentWorldInfo().GetMapName(True)
+
+def _IsClient():
+	return GetEngine().GetCurrentWorldInfo().NetMode == 3
 
 
 _DefaultGameInfo = FindObject("WillowCoopGameInfo", "WillowGame.Default__WillowCoopGameInfo")
@@ -17,11 +25,14 @@ _DefaultGameInfo = FindObject("WillowCoopGameInfo", "WillowGame.Default__WillowC
 # their TimeDilation from it.
 
 
-def _Feedback(feedback):
+def _Feedback(feedback, playerID = None):
 	"""Presents a "training" message to the user with the given string."""
 
-	# Get the current player controller and the graphics object for its HUD.
 	playerController = _GetPlayerController()
+	if playerID is not None and playerID is not _GetPlayerID(playerController):
+		return
+
+	# Get the graphics object for our player controller's HUD.
 	HUDMovie = playerController.GetHUDMovie()
 
 	# If there is no graphics object, we cannot display feedback.
@@ -36,39 +47,46 @@ def _Feedback(feedback):
 	#     AddTrainingText(string MessageString, string TitleString, float Duration, Color DrawColor, string HUDInitializationFrame, bool PausesGame, float PauseContinueDelay, PlayerReplicationInfo Related_PRI1, optional bool bIsntActuallyATrainingMessage, optional WillowPlayerController.EBackButtonScreen StatusMenuTab, optional bool bMandatory)
 	HUDMovie.AddTrainingText(feedback, "Commander", duration, (), "", False, 0, playerController.PlayerReplicationInfo, True)
 
+
 def _ToggleThirdPerson():
 	playerController = _GetPlayerController()
-	# Check the state of the current player controller's camera. If it is
-	# in third person, we will be switching to first, and vice versa.
-	camera = "ThirdPerson" if playerController.UsingFirstPersonCamera() else "FirstPerson"
-	playerController.SetCameraMode(camera)
+	playerController.SetBehindView(not playerController.bBehindView)
+
+
+def _ApplyGameSpeed(speed):
+	GetEngine().GetCurrentWorldInfo().TimeDilation = _DefaultGameInfo.GameSpeed = speed
+	_Feedback("Game Speed: " + str(Fraction(speed)))
+	_ModInstance.ClientApplyGameSpeed(None, speed)
 
 def _HalveGameSpeed():
 	speed = _DefaultGameInfo.GameSpeed
 	if speed > 0.0625:
 		speed /= 2
-		worldInfo = GetEngine().GetCurrentWorldInfo()
-		worldInfo.TimeDilation = speed
-		_DefaultGameInfo.GameSpeed = speed
-	_Feedback("Game Speed: " + str(Fraction(speed)))
+		if _IsClient():
+			_ModInstance.ServerRequestGameSpeed(None, speed)
+		else:
+			_ApplyGameSpeed(speed)
 
 def _DoubleGameSpeed():
 	speed = _DefaultGameInfo.GameSpeed
 	if speed < 32:
 		speed *= 2
-		worldInfo = GetEngine().GetCurrentWorldInfo()
-		worldInfo.TimeDilation = speed
-		_DefaultGameInfo.GameSpeed = speed
-	_Feedback("Game Speed: " + str(Fraction(speed)))
+		if _IsClient():
+			_ModInstance.ServerRequestGameSpeed(None, speed)
+		else:
+			_ApplyGameSpeed(speed)
 
 def _ResetGameSpeed():
-	worldInfo = GetEngine().GetCurrentWorldInfo()
-	worldInfo.TimeDilation = 1.0
-	_DefaultGameInfo.GameSpeed = 1.0
-	_Feedback("Game Speed: 1")
+	speed = _DefaultGameInfo.GameSpeed
+	if speed != 1.0:
+		speed = 1.0
+		if _IsClient():
+			_ModInstance.ServerRequestGameSpeed(None, speed)
+		else:
+			_ApplyGameSpeed(speed)
+	else:
+		_Feedback("Game Speed: 1")
 
-def _ToggleHUD():
-	_GetPlayerController().myHUD.ToggleHUD()
 
 # For toggling damage numbers, we locate the particle system object resposible
 # for emitting them.
@@ -84,129 +102,227 @@ _NoDamageNumberEmitters[0] = None
 _NoDamageNumberEmitters[1] = None
 
 def _ToggleDamageNumbers():
-	if _ModInstance.DamageNumbers.CurrentValue:
-		_DamageNumberParticleSystem.Emitters = _NoDamageNumberEmitters
-		_Feedback("Damage Numbers: Off")
-	else:
+	_DamageNumbers.CurrentValue = not _DamageNumbers.CurrentValue
+	ModMenu.SaveModSettings(_ModInstance)
+
+	CallPostEdit(False)
+	if _DamageNumbers.CurrentValue:
 		_DamageNumberParticleSystem.Emitters = _DamageNumberEmitters
 		_Feedback("Damage Numbers: On")
+	else:
+		_DamageNumberParticleSystem.Emitters = _NoDamageNumberEmitters
+		_Feedback("Damage Numbers: Off")
+	CallPostEdit(True)
 
-	_ModInstance.DamageNumbers.CurrentValue = not _ModInstance.DamageNumbers.CurrentValue
-	ModMenu.SaveModSettings(_ModInstance)
 
+_Position = 0
 
-def _GetMapName():
-	return GetEngine().GetCurrentWorldInfo().GetMapName(True)
+def _SelectPosition():
+	global _Position
+	if   _Position == 0:
+		 _Position =  1
+	elif _Position == 1:
+		 _Position =  2
+	elif _Position == 2:
+		 _Position =  0
+	_Feedback(f"Selected Position {_Position + 1}")
 
-def _GetRotationAndLocation():
-	# Assume our local player controller is the first in the engine's list.
-	playerController = _GetPlayerController()
-	# Our rotation struct is stored in the player controller, while our
-	# location struct is stored in its associated pawn object.
-	return playerController.Rotation, playerController.Pawn.Location
+def _GetPosition(playerController):
+	location = playerController.Pawn.Location
+	rotation = playerController.Rotation
+	return {
+		"X": location.X, "Y": location.Y, "Z": location.Z,
+		"Pitch": rotation.Pitch, "Yaw": rotation.Yaw
+	}
+
+def _ApplyPosition(playerController, position):
+	location = playerController.Pawn.Location
+	location.X, location.Y, location.Z = position["X"], position["Y"], position["Z"]
+	rotation = playerController.Rotation
+	rotation.Pitch, rotation.Yaw = position["Pitch"], position["Yaw"]
 
 def _SavePosition():
-	rotation, location = _GetRotationAndLocation()
-	position = { "X": location.X, "Y": location.Y, "Z": location.Z, "Pitch": rotation.Pitch, "Yaw": rotation.Yaw }
+	mapName = _GetMapName()
 
-	_ModInstance.Positions.CurrentValue[_GetMapName()] = position
+	positions = _Positions.CurrentValue.get(mapName, [None, None, None])
+	positions[_Position] = _GetPosition(_GetPlayerController())
+
+	_Positions.CurrentValue[mapName] = positions
 	ModMenu.SaveModSettings(_ModInstance)
 
-	_Feedback("Saved Position")
+	_Feedback(f"Saved Position {_Position + 1}")
 
 def _RestorePosition():
-	mapName = _GetMapName()
-	if mapName in _ModInstance.Positions.CurrentValue:
-		position = _ModInstance.Positions.CurrentValue[mapName]
+	playerController = _GetPlayerController()
+	position = _Positions.CurrentValue.get(_GetMapName(), [None, None, None])[_Position]
+	if position is None:
+		_Feedback(f"Position {_Position + 1} Not Saved")
 
-		rotation, location = _GetRotationAndLocation()
-		location.X = position["X"]
-		location.Y = position["Y"]
-		location.Z = position["Z"]
-		rotation.Pitch = position["Pitch"]
-		rotation.Yaw = position["Yaw"]
+	elif _IsClient():
+		_ModInstance.ServerRequestPosition(None, position, str(_Position + 1))
 
-		_Feedback("Restored Position")
 	else:
-		_Feedback("No Position Saved")
+		_ApplyPosition(playerController, position)
+		_Feedback(f"Restored Position {_Position + 1}")
 
-_RadiansConversion = 65535.0 / math.pi / 2.0
+		if _ClientTeleporting.CurrentValue == "With Host":
+			for PRI in GetEngine().GetCurrentWorldInfo().GRI.PRIArray:
+				if PRI.Owner is not None:
+					_ApplyPosition(PRI.Owner, position)
+			_ModInstance.ClientApplyPosition(None, position, "")
+
 
 def _MoveForward():
-	rotation, location = _GetRotationAndLocation()
+	playerController = _GetPlayerController()
+	position = _GetPosition(playerController)
 
-	pitch = rotation.Pitch / _RadiansConversion
-	yaw = rotation.Yaw / _RadiansConversion
+	# Convert our pitch and yaw from the game's units to radians.
+	pitch = position["Pitch"] / 65535 * math.tau
+	yaw   = position["Yaw"  ] / 65535 * math.tau
 
-	location.Z += math.sin(pitch) * 250
-	location.X += math.cos(yaw) * math.cos(pitch) * 250
-	location.Y += math.sin(yaw) * math.cos(pitch) * 250
+	position["Z"] += math.sin(pitch) * 250
+	position["X"] += math.cos(yaw) * math.cos(pitch) * 250
+	position["Y"] += math.sin(yaw) * math.cos(pitch) * 250
+
+	if _IsClient():
+		_ModInstance.ServerRequestPosition(None, position, None)
+	else:
+		_ApplyPosition(playerController, position)
+
+
+def _ApplyPlayersOnly(playersOnly):
+	GetEngine().GetCurrentWorldInfo().bPlayersOnly = playersOnly
+	_Feedback("World Freeze: " + ("On" if playersOnly else "Off"))
+	_ModInstance.ClientApplyPlayersOnly(None, playersOnly)
 
 def _TogglePlayersOnly():
-	# Get the current WorldInfo object from the engine.
-	worldInfo = GetEngine().GetCurrentWorldInfo()
-	# Get the WorldInfo's current players only state.
-	playersOnly = worldInfo.bPlayersOnly
+	playersOnly = not GetEngine().GetCurrentWorldInfo().bPlayersOnly
+	if _IsClient():
+		_ModInstance.ServerRequestPlayersOnly(None, playersOnly)
+	else:
+		_ApplyPlayersOnly(playersOnly)
 
-	# Display the state we will be switching to to the user.
-	_Feedback("Players Only: " + ("Off" if playersOnly else "On"))
-	# Apply the change.
-	worldInfo.bPlayersOnly = not playersOnly
+
+def _ToggleHUD():
+	_GetPlayerController().myHUD.ToggleHUD()
 
 def _QuitWithoutSaving():
 	_GetPlayerController().ConsoleCommand("disconnect", False)
 
 
-_KeybindActions = {
-	"Halve Game Speed":      _HalveGameSpeed,
-	"Double Game Speed":     _DoubleGameSpeed,
-	"Reset Game Speed":      _ResetGameSpeed,
-	"Save Position":         _SavePosition,
-	"Restore Position":      _RestorePosition,
-	"Teleport Forward":      _MoveForward,
-	"Toggle World Freeze":   _TogglePlayersOnly,
-	"Toggle HUD":            _ToggleHUD,
-	"Toggle Damage Numbers": _ToggleDamageNumbers,
-	"Toggle Third Person":   _ToggleThirdPerson,
-	"Quit Without Saving":   _QuitWithoutSaving,
-}
+_Positions = ModMenu.Options.Hidden(
+	Caption="Positions",
+	StartingValue={}
+)
+_DamageNumbers = ModMenu.Options.Hidden(
+	Caption="DamageNumbers",
+	StartingValue=True
+)
+_ClientTeleporting = ModMenu.Options.Spinner(
+	Caption="Client Teleporting",
+	Description="Should clients in multiplayer be allowed to teleport their location, or should their location be teleported with the host.",
+	StartingValue="Allow",
+	Choices=["Allow", "With Host", "None"]
+)
+_ClientSpeedPermissions = ModMenu.Options.Boolean(
+	Caption="Client Speed Permissions",
+	Description="Should clients in multiplayer be allowed to modify the speed of the game.",
+	StartingValue=False
+)
+
+
+def _Keybind(name, key, function):
+	keybind = ModMenu.Keybind(name, key)
+	keybind.Function = function
+	return keybind
 
 
 class Commander(ModMenu.SDKMod):
 	Name: str = "Commander"
-	Version: str = "2.0.1"
+	Version: str = "2.1"
 	Description: str = "Perform various changes to the game using key bindings."
 	Author: str = "mopioid"
 	Types: ModTypes = ModTypes.Gameplay
 
 	SaveEnabledState: ModMenu.EnabledSaveType = ModMenu.EnabledSaveType.LoadWithSettings
-
-	Keybinds: List[ModMenu.Keybind] = [
-		ModMenu.Keybind( "Halve Game Speed",      "LeftBracket"  ),
-		ModMenu.Keybind( "Double Game Speed",     "RightBracket" ),
-		ModMenu.Keybind( "Reset Game Speed",      "Backslash"    ),
-		ModMenu.Keybind( "Save Position",         "Period"       ),
-		ModMenu.Keybind( "Restore Position",      "Comma"        ),
-		ModMenu.Keybind( "Teleport Forward",      "Up"           ),
-		ModMenu.Keybind( "Toggle World Freeze",   "Slash"        ),
-		ModMenu.Keybind( "Toggle HUD",            "Semicolon"    ),
-		ModMenu.Keybind( "Toggle Damage Numbers", "Quote"        ),
-		ModMenu.Keybind( "Toggle Third Person",   "Equals"       ),
-		ModMenu.Keybind( "Quit Without Saving",   "End"          ),
+	Options: List[ModMenu.Options.Base] = [
+		_Positions, _DamageNumbers, _ClientTeleporting, _ClientSpeedPermissions
 	]
 
-	Positions: ModMenu.Options.Hidden = ModMenu.Options.Hidden("Positions", StartingValue={})
-	DamageNumbers: ModMenu.Options.Hidden = ModMenu.Options.Hidden("DamageNumbers", StartingValue=True)
-	Options: List[ModMenu.Options.Base] = [Positions, DamageNumbers]
+	Keybinds: List[ModMenu.Keybind] = [
+		_Keybind( "Toggle Third Person",   "Equals",       _ToggleThirdPerson   ),
+		_Keybind( "Halve Game Speed",      "LeftBracket",  _HalveGameSpeed      ),
+		_Keybind( "Double Game Speed",     "RightBracket", _DoubleGameSpeed     ),
+		_Keybind( "Reset Game Speed",      "None",         _ResetGameSpeed      ),
+		_Keybind( "Toggle World Freeze",   "Backslash",    _TogglePlayersOnly   ),
+		_Keybind( "Toggle HUD",            "Semicolon",    _ToggleHUD           ),
+		_Keybind( "Toggle Damage Numbers", "Quote",        _ToggleDamageNumbers ),
+		_Keybind( "Save Position",         "Period",       _SavePosition        ),
+		_Keybind( "Restore Position",      "Comma",        _RestorePosition     ),
+		_Keybind( "Select Position",       "Slash",        _SelectPosition      ),
+		_Keybind( "Teleport Forward",      "Up",           _MoveForward         ),
+		_Keybind( "Quit Without Saving",   "End",          _QuitWithoutSaving   ),
+	]
+	
+	def GameInputPressed(self, bind):
+		bind.Function()
 
-	def __init__(self):
-		ModMenu.LoadModSettings(self)
-		if not self.DamageNumbers.CurrentValue:
+	def Enable(self):
+		super().Enable()
+		if not _DamageNumbers.CurrentValue:
 			_DamageNumberParticleSystem.Emitters = _NoDamageNumberEmitters
 
-	def GameInputPressed(self, input):
-		if input.Name in _KeybindActions:
-			_KeybindActions[input.Name]()
+	def Disable(self):
+		super().Disable()
+		_DamageNumberParticleSystem.Emitters = _DamageNumberEmitters
+
+	@ClientMethod
+	def ClientApplyGameSpeed(self, caller, speed):
+		_ApplyGameSpeed(speed)
+
+	@ClientMethod
+	def ClientApplyPlayersOnly(self, caller, playersOnly):
+		_ApplyPlayersOnly(playersOnly)
+
+	@ClientMethod
+	def ClientApplyPosition(self, caller, position, name):
+		_ApplyPosition(_GetPlayerController(), position)
+		if name is not None:
+			_Feedback(f"Restored Position " + name)
+
+	@ClientMethod
+	def ClientFeedback(self, caller, feedback):
+		_Feedback(feedback)
+
+	@ServerMethod
+	def ServerRequestPosition(self, caller, position, name):
+		if _ClientTeleporting.CurrentValue == "Allow":
+			_ApplyPosition(caller, position)
+			self.ClientApplyPosition(caller, position, name)
+		else:
+			self.ClientFeedback(caller, "Only session host may teleport players.")
+
+	@ServerMethod
+	def ServerRequestGameSpeed(self, caller, speed):
+		if _ClientSpeedPermissions.CurrentValue:
+			_ApplyGameSpeed(speed)
+		else:
+			self.ClientFeedback(caller, "Only session host may modify game speed.")
+
+	@ServerMethod
+	def ServerRequestPlayersOnly(self, caller, playersOnly):
+		if _ClientSpeedPermissions.CurrentValue:
+			_ApplyPlayersOnly(playersOnly)
+		else:
+			self.ClientFeedback(caller, "Only session host may toggle game freeze.")
+
 
 _ModInstance = Commander()
-Mods.append(_ModInstance)
+ModMenu.RegisterMod(_ModInstance)
+
+for mapName, positions in _Positions.CurrentValue.items():
+	if type(positions) is dict:
+		_Positions.CurrentValue[mapName] = [positions, None, None]
+	else:
+		break
+ModMenu.SaveModSettings(_ModInstance)

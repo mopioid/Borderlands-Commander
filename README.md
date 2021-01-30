@@ -27,18 +27,29 @@ Begin by [downloading the latest version of `BorderlandsCommander.zip` here](htt
 
 ## Usage
 
-Borderlands Commander is operated using key inputs during gameplay. These key bindings may be configured in game via the settings menu (OPTIONS > KEYBOARD/MOUSE > MODDED KEY BINDINGS). See table for description of functionality:
+Borderlands Commander is operated using key inputs during gameplay. These key bindings may be configured in game via OPTIONS > KEYBOARD/MOUSE > MODDED KEY BINDINGS:
 
 | Action                | Description                                                                       |
 |-----------------------|-----------------------------------------------------------------------------------|
+| Toggle Third Person   | Switches between first person and third person camera modes.                      |
 | Halve Game Speed      | Decreases the speed of the game to 1/2, then 1/4, etc., to a minimum of 1/32      |
 | Double Game Speed     | Increases the speed of the game to x2, then x4, etc., to a maximum of x32         |
 | Reset Game Speed      | Resets the speed of the game to default.                                          |
-| Save Position         | Saves your coordinates within the current map.                                    |
-| Restore Position      | Teleports you to the set of previously saved coordinates within the current map.  |
-| Teleport Forward      | Teleports you a short distance forward (including through objects).               |
 | Toggle World Freeze   | Halts the game, while still allowing you to move around freely.                   |
 | Toggle HUD            | Enables/Disables the HUD overlay.                                                 |
 | Toggle Damage Numbers | Enables/Disables damage numbers being displayed when damaging enemies.            |
-| Toggle Third Person   | Switches between first person and third person camera modes.                      |
+| Save Position         | Saves your position to the selected slot for the current map.                     |
+| Restore Position      | Teleports you to the position saved to the selected slot for the current map.     |
+| Select Position       | Selects the next slot for saving and restoring positions in the current map.      |
+| Teleport Forward      | Teleports you a short distance forward (including through objects).               |
 | Quit Without Saving   | Leave the current game session without saving, reverting to the last saved state. |
+
+Borderlands Commander also has two options that can be configured under OPTIONS > MODS:
+
+| Option                         | Description                                                                                                   |
+|--------------------------------|---------------------------------------------------------------------------------------------------------------|
+| Client Teleporting - Allow     | Co-op partners who join your game may use Commander to teleport freely (they must also be running Commander). |
+| Client Teleporting - With Host | Co-op partners who join your game will be teleported with you whenever you restore your own position.         |
+| Client Teleporting - None      | Co-op partners who join your game cannot teleport.                                                            |
+| Client Speed Permissions - On  | Co-op partners who join your game can adjust the game speed and freeze the world (affects all players).       |
+| Client Speed Permissions - Off | Co-op partners who join your game cannot adjust the game speed or freeze the world.                           |
