@@ -21,8 +21,7 @@ def _IsClient():
 
 _DefaultGameInfo = FindObject("WillowCoopGameInfo", "WillowGame.Default__WillowCoopGameInfo")
 """A reference to the WillowCoopGameInfo template object."""
-# We use this for managing game speed, as transient WorldInfo objects pull
-# their TimeDilation from it.
+# We use this for managing game speed, as WorldInfo objects pull their TimeDilation from it.
 
 
 def _Feedback(feedback):
@@ -53,14 +52,14 @@ def _ToggleThirdPerson():
 def _ApplyGameSpeed(speed):
 	GetEngine().GetCurrentWorldInfo().TimeDilation = _DefaultGameInfo.GameSpeed = speed
 	_Feedback("Game Speed: " + str(Fraction(speed)))
-	_ModInstance.ClientApplyGameSpeed(None, speed)
+	_ModInstance.ClientApplyGameSpeed(speed)
 
 def _HalveGameSpeed():
 	speed = _DefaultGameInfo.GameSpeed
 	if speed > 0.0625:
 		speed /= 2
 		if _IsClient():
-			_ModInstance.ServerRequestGameSpeed(None, speed)
+			_ModInstance.ServerRequestGameSpeed(speed)
 		else:
 			_ApplyGameSpeed(speed)
 
@@ -69,7 +68,7 @@ def _DoubleGameSpeed():
 	if speed < 32:
 		speed *= 2
 		if _IsClient():
-			_ModInstance.ServerRequestGameSpeed(None, speed)
+			_ModInstance.ServerRequestGameSpeed(speed)
 		else:
 			_ApplyGameSpeed(speed)
 
@@ -78,23 +77,21 @@ def _ResetGameSpeed():
 	if speed != 1.0:
 		speed = 1.0
 		if _IsClient():
-			_ModInstance.ServerRequestGameSpeed(None, speed)
+			_ModInstance.ServerRequestGameSpeed(speed)
 		else:
 			_ApplyGameSpeed(speed)
 	else:
 		_Feedback("Game Speed: 1")
 
 
-# For toggling damage numbers, we locate the particle system object resposible
-# for emitting them.
+# For toggling damage numbers, we locate the particle system object resposible for emitting them.
 _DamageNumberParticleSystem = FindObject("ParticleSystem", "FX_CHAR_Damage_Matrix.Particles.Part_Dynamic_Number")
-# The SDK cannot currently replace individual FArray members with nulls, so we
-# create two of our own copies of its emitter array; one that emits damage
-# numbers, and one that doesn't.
+# The SDK cannot currently replace individual FArray members with nulls, so we create two of our own
+# copies of its emitter array; one that emits damage numbers, and one that doesn't.
 _DamageNumberEmitters = list(_DamageNumberParticleSystem.Emitters)
 _NoDamageNumberEmitters = list(_DamageNumberParticleSystem.Emitters)
-# The first two particles in the emitter array are the ones responsible for
-# damage numbers, so we replace them with nulls in the "no damage number" array.
+# The first two particles in the emitter array are the ones responsible for damage numbers, so we
+# replace them with nulls in the "no damage number" array.
 _NoDamageNumberEmitters[0] = None
 _NoDamageNumberEmitters[1] = None
 
@@ -134,9 +131,11 @@ def _GetPosition(playerController):
 
 def _ApplyPosition(playerController, position):
 	location = playerController.Pawn.Location
-	location.X, location.Y, location.Z = position["X"], position["Y"], position["Z"]
 	rotation = playerController.Rotation
+	CallPostEdit(False)
+	location.X, location.Y, location.Z = position["X"], position["Y"], position["Z"]
 	rotation.Pitch, rotation.Yaw = position["Pitch"], position["Yaw"]
+	CallPostEdit(True)
 
 def _SavePosition():
 	mapName = _GetMapName()
@@ -156,7 +155,7 @@ def _RestorePosition():
 		_Feedback(f"Position {_Position + 1} Not Saved")
 
 	elif _IsClient():
-		_ModInstance.ServerRequestPosition(None, position, str(_Position + 1))
+		_ModInstance.ServerRequestPosition(position, name=str(_Position + 1))
 
 	else:
 		_ApplyPosition(playerController, position)
@@ -166,7 +165,7 @@ def _RestorePosition():
 			for PRI in GetEngine().GetCurrentWorldInfo().GRI.PRIArray:
 				if PRI.Owner is not None:
 					_ApplyPosition(PRI.Owner, position)
-			_ModInstance.ClientApplyPosition(None, position, "")
+			_ModInstance.ClientApplyPosition(position, name="")
 
 
 def _MoveForward():
@@ -182,7 +181,7 @@ def _MoveForward():
 	position["Y"] += math.sin(yaw) * math.cos(pitch) * 250
 
 	if _IsClient():
-		_ModInstance.ServerRequestPosition(None, position, None)
+		_ModInstance.ServerRequestPosition(position, name=None)
 	else:
 		_ApplyPosition(playerController, position)
 
@@ -190,12 +189,12 @@ def _MoveForward():
 def _ApplyPlayersOnly(playersOnly):
 	GetEngine().GetCurrentWorldInfo().bPlayersOnly = playersOnly
 	_Feedback("World Freeze: " + ("On" if playersOnly else "Off"))
-	_ModInstance.ClientApplyPlayersOnly(None, playersOnly)
+	_ModInstance.ClientApplyPlayersOnly(playersOnly)
 
 def _TogglePlayersOnly():
 	playersOnly = not GetEngine().GetCurrentWorldInfo().bPlayersOnly
 	if _IsClient():
-		_ModInstance.ServerRequestPlayersOnly(None, playersOnly)
+		_ModInstance.ServerRequestPlayersOnly(playersOnly)
 	else:
 		_ApplyPlayersOnly(playersOnly)
 
@@ -218,8 +217,8 @@ _DamageNumbers = ModMenu.Options.Hidden(
 _ClientTeleporting = ModMenu.Options.Spinner(
 	Caption="Client Teleporting",
 	Description="Should clients in multiplayer be allowed to teleport their location, or should their location be teleported with the host.",
-	StartingValue="Allow",
-	Choices=["Allow", "With Host", "None"]
+	Choices=["Allow", "With Host", "None"],
+	StartingValue="Allow"
 )
 _ClientSpeedPermissions = ModMenu.Options.Boolean(
 	Caption="Client Speed Permissions",
@@ -241,10 +240,10 @@ class Commander(ModMenu.SDKMod):
 	Author: str = "mopioid"
 	Types: ModTypes = ModTypes.Gameplay
 
-	SaveEnabledState: ModMenu.EnabledSaveType = ModMenu.EnabledSaveType.LoadWithSettings
 	Options: List[ModMenu.Options.Base] = [
 		_Positions, _DamageNumbers, _ClientTeleporting, _ClientSpeedPermissions
 	]
+	SaveEnabledState: ModMenu.EnabledSaveType = ModMenu.EnabledSaveType.LoadWithSettings
 
 	Keybinds: List[ModMenu.Keybind] = [
 		_Keybind( "Toggle Third Person",   "Equals",       _ToggleThirdPerson   ),
@@ -274,44 +273,44 @@ class Commander(ModMenu.SDKMod):
 		_DamageNumberParticleSystem.Emitters = _DamageNumberEmitters
 
 	@ClientMethod
-	def ClientApplyGameSpeed(self, caller, speed):
+	def ClientApplyGameSpeed(self, speed, playerController = None):
 		_ApplyGameSpeed(speed)
 
 	@ClientMethod
-	def ClientApplyPlayersOnly(self, caller, playersOnly):
+	def ClientApplyPlayersOnly(self, playersOnly, playerController = None):
 		_ApplyPlayersOnly(playersOnly)
 
 	@ClientMethod
-	def ClientApplyPosition(self, caller, position, name):
+	def ClientApplyPosition(self, position, name, playerController = None):
 		_ApplyPosition(_GetPlayerController(), position)
 		if name is not None:
 			_Feedback(f"Restored Position " + name)
 
 	@ClientMethod
-	def ClientFeedback(self, caller, feedback):
+	def ClientFeedback(self, feedback, playerController = None):
 		_Feedback(feedback)
 
 	@ServerMethod
-	def ServerRequestPosition(self, caller, position, name):
+	def ServerRequestPosition(self, position, name, playerController = None):
 		if _ClientTeleporting.CurrentValue == "Allow":
-			_ApplyPosition(caller, position)
-			self.ClientApplyPosition(caller, position, name)
+			_ApplyPosition(playerController, position)
+			self.ClientApplyPosition(position, name, playerController)
 		else:
-			self.ClientFeedback(caller, "Only session host may teleport players.")
+			self.ClientFeedback("Only session host may teleport players.", playerController)
 
 	@ServerMethod
-	def ServerRequestGameSpeed(self, caller, speed):
+	def ServerRequestGameSpeed(self, speed, playerController = None):
 		if _ClientSpeedPermissions.CurrentValue:
 			_ApplyGameSpeed(speed)
 		else:
-			self.ClientFeedback(caller, "Only session host may modify game speed.")
+			self.ClientFeedback("Only session host may modify game speed.", playerController)
 
 	@ServerMethod
-	def ServerRequestPlayersOnly(self, caller, playersOnly):
+	def ServerRequestPlayersOnly(self, playersOnly, playerController = None):
 		if _ClientSpeedPermissions.CurrentValue:
 			_ApplyPlayersOnly(playersOnly)
 		else:
-			self.ClientFeedback(caller, "Only session host may toggle game freeze.")
+			self.ClientFeedback("Only session host may toggle game freeze.", playerController)
 
 
 _ModInstance = Commander()
