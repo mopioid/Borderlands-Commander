@@ -15,13 +15,13 @@ This is almost entirely made possible thanks to the work of the UnrealEngine Pyt
 
 ## Installation
 
-Begin by [downloading the latest version of `BorderlandsCommander.zip` here](https://github.com/mopioid/Borderlands-Commander/releases).
+Begin by [downloading `Borderlands-Commander-master.zip` here](https://github.com/mopioid/Borderlands-Commander/archive/master.zip).
 
-1. [Install UnrealEngine PythonSDK](https://github.com/bl-sdk/PythonSDK#installation) if you have not already.
+1. [Install/update UnrealEngine PythonSDK](https://github.com/bl-sdk/PythonSDK#installation) if you have not already. *Note that your Mod Menu must version 2.3 or later* (check MODS > General from the main menu).
 
 2. Locate the SDK's `Mods` folder (located in the `Win32` folder of the `Binaries` folder of your BL2/TPS installation).
 
-3. Copy the `Commander` folder from `BorderlandsCommander.zip` to the SDK's `Mods` folder.
+3. Copy the `Commander` folder from `Borderlands-Commander-master.zip` to the SDK's `Mods` folder.
 
 4. Launch the game, select "Mods" from the main menu, then select "Commander" to enable it.
 
