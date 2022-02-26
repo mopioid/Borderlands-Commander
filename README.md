@@ -15,7 +15,7 @@ This is almost entirely made possible thanks to the work of the UnrealEngine Pyt
 
 ## Installation
 
-Begin by [downloading `Borderlands-Commander-master.zip` here](https://github.com/mopioid/Borderlands-Commander/archive/master.zip).
+Begin by [downloading `Borderlands-Commander-master.zip` here](https://github.com/mopioid/Borderlands-Commander/archive/refs/heads/master.zip).
 
 1. [Install/update UnrealEngine PythonSDK](https://github.com/bl-sdk/PythonSDK#installation) if you have not already. *Note that your Mod Menu must version 2.3 or later* (check MODS > General from the main menu).
 
