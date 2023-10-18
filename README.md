@@ -1,6 +1,7 @@
 # Borderlands Commander
-An [UnrealEngine PythonSDK](https://github.com/bl-sdk/PythonSDK) mod for Borderlands 2 and Borderlands: The Pre-Sequel! that provides a number of useful functions while in game:
-* Saving and teleporting your position in the game.
+An [UnrealEngine PythonSDK](https://github.com/bl-sdk/PythonSDK) mod for Borderlands 2 and Borderlands: The Pre-Sequel! that provides useful functionality while in-game:
+* Configuring your own hotkeys to run console commands of your choice.
+* Saving and teleporting your position in the world.
 * Freezing time.
 * Modifying game speed.
 * Quitting without saving.
@@ -15,39 +16,38 @@ This is almost entirely made possible thanks to the work of the UnrealEngine Pyt
 
 ## Installation
 
-Begin by [downloading `Borderlands-Commander-master.zip` here](https://github.com/mopioid/Borderlands-Commander/archive/master.zip).
-
-1. [Install/update UnrealEngine PythonSDK](https://github.com/bl-sdk/PythonSDK#installation) if you have not already. *Note that your Mod Menu must version 2.3 or later* (check MODS > General from the main menu).
-
-2. Locate the SDK's `Mods` folder (located in the `Win32` folder of the `Binaries` folder of your BL2/TPS installation).
-
-3. Copy the `Commander` folder from `Borderlands-Commander-master.zip` to the SDK's `Mods` folder.
-
-4. Launch the game, select "Mods" from the main menu, then select "Commander" to enable it.
+See: [Installing Borderlands Commander](https://github.com/mopioid/Borderlands-Commander/wiki/Installation).
 
 ## Usage
 
-Borderlands Commander is operated using key inputs during gameplay. These key bindings may be configured in game via OPTIONS > KEYBOARD/MOUSE > MODDED KEY BINDINGS:
+The built-in features of Borderlands Commander are operated using key inputs during gameplay. These key bindings may be configured in game via OPTIONS > KEYBOARD/MOUSE > MODDED KEY BINDINGS:
 
 | Action                | Description                                                                       |
 |-----------------------|-----------------------------------------------------------------------------------|
-| Toggle Third Person   | Switches between first person and third person camera modes.                      |
 | Halve Game Speed      | Decreases the speed of the game to 1/2, then 1/4, etc., to a minimum of 1/32      |
 | Double Game Speed     | Increases the speed of the game to x2, then x4, etc., to a maximum of x32         |
 | Reset Game Speed      | Resets the speed of the game to default.                                          |
 | Toggle World Freeze   | Halts the game, while still allowing you to move around freely.                   |
-| Toggle HUD            | Enables/Disables the HUD overlay.                                                 |
 | Toggle Damage Numbers | Enables/Disables damage numbers being displayed when damaging enemies.            |
 | Save Position         | Saves your position to the selected slot for the current map.                     |
 | Restore Position      | Teleports you to the position saved to the selected slot for the current map.     |
 | Select Position       | Selects the next slot for saving and restoring positions in the current map.      |
 | Teleport Forward      | Teleports you a short distance forward (including through objects).               |
+
+In addition, Borderlands Commander allows you to create hotkeys for your own custom console commands. See: [Custom Commands in Borderlands Commander](https://github.com/mopioid/Borderlands-Commander/wiki/Custom-Commands). Included with Commander are four default commands:
+
+| Action                | Description                                                                       |
+|-----------------------|-----------------------------------------------------------------------------------|
+| Toggle HUD            | Enables/Disables the HUD overlay.                                                 |
+| Toggle Third Person   | Switches between first person and third person camera modes.                      |
 | Quit Without Saving   | Leave the current game session without saving, reverting to the last saved state. |
+| Respawn Enemies       | Allow nearly every enemy in a map to respawn immediately.                         |
 
 Borderlands Commander also has two options that can be configured under OPTIONS > MODS:
 
 | Option                         | Description                                                                                                   |
 |--------------------------------|---------------------------------------------------------------------------------------------------------------|
+| Custom Commands                | Launch the configurator for adding and modifying your own custom console commands.                            |
 | Client Teleporting - Allow     | Co-op partners who join your game may use Commander to teleport freely (they must also be running Commander). |
 | Client Teleporting - With Host | Co-op partners who join your game will be teleported with you whenever you restore your own position.         |
 | Client Teleporting - None      | Co-op partners who join your game cannot teleport.                                                            |
