@@ -34,7 +34,7 @@ The built-in features of Borderlands Commander are operated using key inputs dur
 | Select Position       | Selects the next slot for saving and restoring positions in the current map.      |
 | Teleport Forward      | Teleports you a short distance forward (including through objects).               |
 
-In addition, Borderlands Commander allows you to create hotkeys for your own custom console commands. See: [Custom Commands in Borderlands Commander](https://github.com/mopioid/Borderlands-Commander/wiki/Custom-Commands). Included with Commander are four default commands:
+In addition, Borderlands Commander allows you to create hotkeys for your own custom console commands. See: [Custom Commands in Borderlands Commander](https://github.com/mopioid/Borderlands-Commander/wiki/Custom-Commands). Join the [Discord Server](https://discord.gg/54DE8uXvHE) to exchange custom commanders with other users! Included with Commander are four default commands:
 
 | Action                | Description                                                                       |
 |-----------------------|-----------------------------------------------------------------------------------|
