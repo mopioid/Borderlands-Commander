@@ -1,4 +1,7 @@
 # Borderlands Commander
+
+[**Discord Server**](https://discord.gg/54DE8uXvHE)
+
 An [UnrealEngine PythonSDK](https://github.com/bl-sdk/PythonSDK) mod for Borderlands 2 and Borderlands: The Pre-Sequel! that provides useful functionality while in-game:
 * Configuring your own hotkeys to run console commands of your choice.
 * Saving and teleporting your position in the world.
