@@ -24,6 +24,14 @@ ClientTeleporting: ModMenu.Options.Spinner = ModMenu.Options.Spinner(
     Choices=["Allow", "With Host", "None"],
     StartingValue="Allow"
 )
+ClientTeleportingDistance: ModMenu.Options.Slider = ModMenu.Options.Slider(
+    Caption="Client Teleporting Distance",
+    Description="Specifies the distance the user can teleport, using the 'Move Forward' command.",
+    StartingValue=250,
+    MinValue=250,
+    MaxValue=25000,
+    Increment=250
+)
 ClientSpeedPermissions: ModMenu.Options.Boolean = ModMenu.Options.Boolean(
     Caption="Client Speed Permissions",
     Description="Should clients in multiplayer be allowed to modify the speed of the game.",
@@ -32,7 +40,7 @@ ClientSpeedPermissions: ModMenu.Options.Boolean = ModMenu.Options.Boolean(
 
 
 Options: Sequence[ModMenu.Options.Base] = (
-    Positions, DamageNumbers, ClientTeleporting, ClientSpeedPermissions
+    Positions, DamageNumbers, ClientTeleporting, ClientTeleportingDistance, ClientSpeedPermissions
 )
 
 def PC():
@@ -209,9 +217,11 @@ def _MoveForward():
     pitch = position["Pitch"] / 65535 * math.tau
     yaw   = position["Yaw"  ] / 65535 * math.tau
 
-    position["Z"] += math.sin(pitch) * 250
-    position["X"] += math.cos(yaw) * math.cos(pitch) * 250
-    position["Y"] += math.sin(yaw) * math.cos(pitch) * 250
+    distance = ClientTeleportingDistance.CurrentValue
+
+    position["Z"] += math.sin(pitch) * distance
+    position["X"] += math.cos(yaw) * math.cos(pitch) * distance
+    position["Y"] += math.sin(yaw) * math.cos(pitch) * distance
 
     _StopPlayer(PC())
 
