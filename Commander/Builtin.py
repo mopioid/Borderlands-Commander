@@ -150,6 +150,11 @@ def _GetPosition(PC):
     }
 
 
+def _StopPlayer(PC):
+    PlayerPawn = PC.Pawn
+    PlayerPawn.Velocity = 0, 0, 0
+
+
 def ApplyPosition(PC, position):
     location = position["X"], position["Y"], position["Z"]
     rotation = position["Pitch"], position["Yaw"], 0
@@ -207,6 +212,8 @@ def _MoveForward():
     position["Z"] += math.sin(pitch) * 250
     position["X"] += math.cos(yaw) * math.cos(pitch) * 250
     position["Y"] += math.sin(yaw) * math.cos(pitch) * 250
+
+    _StopPlayer(PC())
 
     if _IsClient():
         Commander.Instance.ServerRequestPosition(position, name=None)
