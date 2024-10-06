@@ -144,7 +144,7 @@ def _DefaultPositions():
 
 def _SelectPosition():
     global _Position, _MaxPositions
-    _Position =  _Position + 1 % _MaxPositions
+    _Position =  (_Position + 1) % _MaxPositions
     Popup(f"Selected Position {_Position + 1}")
 
 
