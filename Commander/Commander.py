@@ -62,7 +62,7 @@ def CompileCustomCommand(command: str) -> Callable[[], None]:
 
 class Commander(ModMenu.SDKMod):
     Name: str = "Commander"
-    Version: str = "2.5"
+    Version: str = "2.6"
     Description: str = "Perform various actions in game using key bindings."
     Author: str = "mopioid"
     Types: ModMenu.ModTypes = ModMenu.ModTypes.Gameplay

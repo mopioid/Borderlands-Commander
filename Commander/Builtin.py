@@ -137,15 +137,14 @@ def _ToggleDamageNumbers():
 
 
 _Position = 0
+_MaxPositions = 5
+def _DefaultPositions():
+    global _MaxPositions
+    return [None] * _MaxPositions
 
 def _SelectPosition():
-    global _Position
-    if   _Position == 0:
-         _Position =  1
-    elif _Position == 1:
-         _Position =  2
-    elif _Position == 2:
-         _Position =  0
+    global _Position, _MaxPositions
+    _Position =  _Position + 1 % _MaxPositions
     Popup(f"Selected Position {_Position + 1}")
 
 
@@ -172,15 +171,17 @@ def ApplyPosition(PC, position):
         PC.NoFailSetPawnLocation(PC.Pawn, location)
     else:
         pawn = vehicle.GetPawnToTeleport()
-        pawn.Mesh.SetRBPosition(location);
-        pawn.Mesh.SetRBRotation(rotation);
+        pawn.Mesh.SetRBPosition(location)
+        pawn.Mesh.SetRBRotation(rotation)
     PC.ClientSetRotation(rotation)
+
+    _StopPlayer(PC())
 
 
 def _SavePosition():
     mapName = GetEngine().GetCurrentWorldInfo().GetMapName(True)
 
-    positions = Positions.CurrentValue.get(mapName, [None, None, None])
+    positions = Positions.CurrentValue.get(mapName, _DefaultPositions())
     positions[_Position] = _GetPosition(PC())
 
     Positions.CurrentValue[mapName] = positions
@@ -192,7 +193,7 @@ def _SavePosition():
 def _RestorePosition():
     mapName = GetEngine().GetCurrentWorldInfo().GetMapName(True)
 
-    position = Positions.CurrentValue.get(mapName, [None, None, None])[_Position]
+    position = Positions.CurrentValue.get(mapName, _DefaultPositions())[_Position]
     if position is None:
         Popup(f"Position {_Position + 1} Not Saved")
 
@@ -210,25 +211,31 @@ def _RestorePosition():
             Commander.Instance.ClientApplyPosition(position, name="")
 
 
-def _MoveForward():
+def _Move(direction = 1):
     position = _GetPosition(PC())
 
     # Convert our pitch and yaw from the game's units to radians.
     pitch = position["Pitch"] / 65535 * math.tau
     yaw   = position["Yaw"  ] / 65535 * math.tau
 
-    distance = ClientTeleportingDistance.CurrentValue
+    distance = ClientTeleportingDistance.CurrentValue * direction
 
     position["Z"] += math.sin(pitch) * distance
     position["X"] += math.cos(yaw) * math.cos(pitch) * distance
     position["Y"] += math.sin(yaw) * math.cos(pitch) * distance
 
-    _StopPlayer(PC())
-
     if _IsClient():
         Commander.Instance.ServerRequestPosition(position, name=None)
     else:
         ApplyPosition(PC(), position)
+
+
+def _MoveForward():
+    return _Move()
+
+
+def _MoveBackward():
+    return _Move(-1)
 
 
 def ApplyPlayersOnly(playersOnly):
@@ -254,6 +261,7 @@ Keybinds: Sequence[ModMenu.Keybind] = (
     ModMenu.Keybind("Restore Position",      "Comma",        OnPress=_RestorePosition    ),
     ModMenu.Keybind("Select Position",       "Slash",        OnPress=_SelectPosition     ),
     ModMenu.Keybind("Teleport Forward",      "Up",           OnPress=_MoveForward        ),
+    ModMenu.Keybind("Teleport Backward",     "Down",         OnPress=_MoveBackward       )
 )
 
 def KeybindExists(name: str) -> bool:
