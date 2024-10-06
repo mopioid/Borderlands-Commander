@@ -137,7 +137,7 @@ def _ToggleDamageNumbers():
 
 
 _Position = 0
-_MaxPositions = 5
+_MaxPositions = 6
 def _DefaultPositions():
     global _MaxPositions
     return [None] * _MaxPositions
@@ -157,11 +157,6 @@ def _GetPosition(PC):
     }
 
 
-def _StopPlayer(PC):
-    PlayerPawn = PC.Pawn
-    PlayerPawn.Velocity = 0, 0, 0
-
-
 def ApplyPosition(PC, position):
     location = position["X"], position["Y"], position["Z"]
     rotation = position["Pitch"], position["Yaw"], 0
@@ -175,13 +170,22 @@ def ApplyPosition(PC, position):
         pawn.Mesh.SetRBRotation(rotation)
     PC.ClientSetRotation(rotation)
 
-    _StopPlayer(PC())
+    PlayerPawn = PC.Pawn
+    PlayerPawn.Velocity = 0, 0, 0
+
+
+def _FixPositionsArray(positions):
+    global _MaxPositions
+    if len(positions) < _MaxPositions:
+        positions = positions + ([None] * (_MaxPositions - len(positions)))
+    return positions
 
 
 def _SavePosition():
     mapName = GetEngine().GetCurrentWorldInfo().GetMapName(True)
 
     positions = Positions.CurrentValue.get(mapName, _DefaultPositions())
+    positions = _FixPositionsArray(positions)
     positions[_Position] = _GetPosition(PC())
 
     Positions.CurrentValue[mapName] = positions
@@ -193,7 +197,10 @@ def _SavePosition():
 def _RestorePosition():
     mapName = GetEngine().GetCurrentWorldInfo().GetMapName(True)
 
-    position = Positions.CurrentValue.get(mapName, _DefaultPositions())[_Position]
+    positions = Positions.CurrentValue.get(mapName, _DefaultPositions())
+    positions = _FixPositionsArray(positions)
+    position = positions[_Position]
+
     if position is None:
         Popup(f"Position {_Position + 1} Not Saved")
 
