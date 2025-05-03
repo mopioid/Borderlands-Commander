@@ -3,7 +3,14 @@ name = "Borderlands Commander"
 version = "3.0"
 authors = [{ name = "mopioid" }]
 description = """
-
+A PythonSDK mod for Borderlands series games that provides useful functionality while in-game:
+* Saving and teleporting your position in the world
+* Modifying game speed
+* Configuring your own hotkeys to run console commands of your choice, such as:
+    * Toggling the HUD
+    * Toggling Third Person
+    * Quitting Without Saving
+    * Respawning Enemies
 """
 
 [project.urls]
@@ -12,6 +19,6 @@ Homepage = "https://github.com/mopioid/Borderlands-Commander"
 
 [tool.sdkmod]
 name = "Commander"
-download = "https://github.com/mopioid/Borderlands-Commander/releases"
+download = "https://github.com/mopioid/Borderlands-Commander/raw/refs/heads/master/Commander.sdkmod"
 supported_games = ["BL1", "BL2", "TPS", "AoDK", "BL3", "WL"]
 coop_support = "RequiresAllPlayers"
