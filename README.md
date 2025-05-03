@@ -1,58 +1,90 @@
 # Borderlands Commander
 
-[**Discord Server**](https://discord.gg/54DE8uXvHE)
+[**Discord**](https://discord.gg/54DE8uXvHE)&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;[**Donate**](https://streamlabs.com/mopioid/tip)
 
-An [UnrealEngine PythonSDK](https://github.com/bl-sdk/PythonSDK) mod for Borderlands 2 and Borderlands: The Pre-Sequel! that provides useful functionality while in-game:
-* Configuring your own hotkeys to run console commands of your choice.
-* Saving and teleporting your position in the world.
-* Freezing time.
-* Modifying game speed.
-* Quitting without saving.
-* Toggling HUD elements.
-* Toggling Third Person camera.
+<br />
 
-See the video below for a brief demonstration.
+A [PythonSDK](https://bl-sdk.github.io/) mod for Borderlands series games that provides useful functionality while in-game:
+* Saving and teleporting your position in the world
+* Modifying game speed
+* Configuring your own hotkeys to run console commands of your choice
 
-[![Borderlands Commander Intro](https://i.imgur.com/ZY1nw1z.jpg)](https://youtu.be/ftfeGFUteWI)
+Borderlands Commander supports the following games:
+* Borderlands GOTY
+* Borderlands 2
+* Borderlands: The Pre-Sequel!
+* Borderlands 3
+* Tiny Tina's Assault on Dragon Keep
+* Tiny Tina's Wonderlands
 
-This is almost entirely made possible thanks to the work of the UnrealEngine PythonSDK team. Special thanks to LightChaosman and his [NoDamageNumbers mod](https://github.com/BLCM/BLCMods/blob/master/Borderlands%202%20mods/LightChaosman/NoDamageNumbers.txt), FromDarkHell for various modding tidbits, JoltzDude139 for expert testing and feedback, and c0dycode for originally making Commander possible via [CommandInjector](https://github.com/c0dycode/BL-CommandInjector).
+<br />
 
 ## Installation
 
-See: [Installing Borderlands Commander](https://github.com/mopioid/Borderlands-Commander/wiki/Installation).
+See [PythonSDK Installation Instructions](https://bl-sdk.github.io/) for how to get started using SDK mods.
+
+The latest version of `Commander.sdkmod` [can be found here](https://github.com/mopioid/Borderlands-Commander/releases).
+
+<br />
 
 ## Usage
 
-The built-in features of Borderlands Commander are operated using key inputs during gameplay. These key bindings may be configured in game via OPTIONS > KEYBOARD/MOUSE > MODDED KEY BINDINGS:
+The built-in features of Borderlands Commander are operated using key inputs during gameplay. These key bindings may be configured in game via `Mods > Commander > Key Bindings`:
 
-| Action                | Description                                                                       |
-|-----------------------|-----------------------------------------------------------------------------------|
-| Halve Game Speed      | Decreases the speed of the game to 1/2, then 1/4, etc., to a minimum of 1/32      |
-| Double Game Speed     | Increases the speed of the game to x2, then x4, etc., to a maximum of x32         |
-| Reset Game Speed      | Resets the speed of the game to default.                                          |
-| Toggle World Freeze   | Halts the game, while still allowing you to move around freely.                   |
-| Toggle Damage Numbers | Enables/Disables damage numbers being displayed when damaging enemies.            |
-| Save Position         | Saves your position to the selected slot for the current map.                     |
-| Restore Position      | Teleports you to the position saved to the selected slot for the current map.     |
-| Select Position       | Selects the next slot for saving and restoring positions in the current map.      |
-| Teleport Forward      | Teleports you a short distance forward (including through objects).               |
+| Action| Default&nbsp;Key | Usage |
+|-|-|-|
+| Save&nbsp;Position | <kbd>Period</kbd> | <ul><li>Tap to save your current position</li><li>Hold and press a number key to save a position for that number</li></ul> |
+| Restore&nbsp;Position | <kbd>Comma</kbd> | <ul><li>Tap to teleport to your saved position</li><li>Hold and press a number key to teleport to your saved position for that number</li></ul> |
+| Teleport&nbsp;to&nbsp;Spawn | <kbd>Slash</kbd> | <ul><li>Tap to cycle through points of interest in the map</li><li>Hold and press a number key to teleport to a specific point of interest</li><li>Hold this key, plus the key for `Restore Position`, plus a number key, to teleport to that co-op partner in your list of partners</li></ul> |
+| Teleport&nbsp;Forward | <kbd>Up</kbd> | <ul><li>Tap to teleport forward a short distance</li><li>Hold and press a number key to teleport forward a further distances</li></ul> |
+| Teleport&nbsp;Forward | <kbd>Up</kbd> | <ul><li>Tap to teleport forward a short distance without respect to solid objects</li><li>Hold and press a number key to teleport forward greater distances</li></ul> |
+| Change&nbsp;Game&nbsp;Speed | <kbd>Backslash</kbd> | <ul><li>Hold and scroll up with the mousewheel to increase game speed</li><li>Hold and scroll down with the mousewheel to decrease game speed</li><li>Hold and click with the mousewheel to freeze time</li></ul> |
 
-In addition, Borderlands Commander allows you to create hotkeys for your own custom console commands. See: [Custom Commands in Borderlands Commander](https://github.com/mopioid/Borderlands-Commander/wiki/Custom-Commands). Join the [Discord Server](https://discord.gg/54DE8uXvHE) to exchange custom commanders with other users! Included with Commander are four default commands:
+<br />
 
-| Action                | Description                                                                       |
-|-----------------------|-----------------------------------------------------------------------------------|
-| Toggle HUD            | Enables/Disables the HUD overlay.                                                 |
-| Toggle Third Person   | Switches between first person and third person camera modes.                      |
-| Quit Without Saving   | Leave the current game session without saving, reverting to the last saved state. |
-| Respawn Enemies       | Allow nearly every enemy in a map to respawn immediately.                         |
+## Custom Commands
 
-Borderlands Commander also has two options that can be configured under OPTIONS > MODS:
+Borderlands Commander allows you to create hotkeys for your own custom console commands.
 
-| Option                         | Description                                                                                                   |
-|--------------------------------|---------------------------------------------------------------------------------------------------------------|
-| Custom Commands                | Launch the configurator for adding and modifying your own custom console commands.                            |
-| Client Teleporting - Allow     | Co-op partners who join your game may use Commander to teleport freely (they must also be running Commander). |
-| Client Teleporting - With Host | Co-op partners who join your game will be teleported with you whenever you restore your own position.         |
-| Client Teleporting - None      | Co-op partners who join your game cannot teleport.                                                            |
-| Client Speed Permissions - On  | Co-op partners who join your game can adjust the game speed and freeze the world (affects all players).       |
-| Client Speed Permissions - Off | Co-op partners who join your game cannot adjust the game speed or freeze the world.                           |
+Included with Commander are four default commands for each game:
+
+### Borderlands 1, Borderlands 2, The Pre-Sequel!, Attack on Dragon Keep
+
+| Action | Description |
+|-|-|
+| Toggle&nbsp;HUD | Enables/Disables the HUD overlay |
+| Toggle&nbsp;Third&nbsp;Person | Switches between first person and third person camera modes |
+| Quit&nbsp;Without&nbsp;Saving | Leave the current game session without saving, reverting to the last saved state |
+| Respawn&nbsp;Enemies | Allow nearly every enemy in a map to respawn immediately |
+
+### Borderlands 3, Wonderlands
+
+| Action | Description |
+|-|-|
+| Teleport&nbsp;to&nbsp;Ping | Teleports you to the position of the last ping |
+| Respawn&nbsp;Enemies | Allow nearly every enemy in a map to respawn immediately |
+| Reload&nbsp;Map | Reloads the current map, more quickly than a save-quit |
+| Quit&nbsp;Without&nbsp;Saving | Leave the current game session without saving, reverting to the last saved state |
+
+### Adding Your Own
+
+To edit your list of custom console commands, navigate to `Mods > Commander`, and click `Edit Custom Commands`. This will open a text file with your list of console commands.
+
+Each console command is simply denoted with the name of the command, followed by a colon (<kbd>:</kbd>), followed by the actual command to run. Multiple commands are separated with two line breaks.
+
+Once you have saved your commands, click the `Reload Custom Commands` button in Commander's options. To manage newly added commands in the keybinds sections, you must back out of Commander's options and re-open them.
+
+If you would like to reset your list of custom commands to the default, simply delete the file and click Reload.
+
+For a repository of useful custom commands in various games, [check out Commander's Discord server](https://discord.gg/54DE8uXvHE).
+
+<br />
+
+## Other Options
+
+| Option | Description |
+|-|-|
+| Edit&nbsp;Custom&nbsp;Commands | Open your `Commander.txt` file to edit your custom commands |
+| Reload&nbsp;Custom&nbsp;Commands | Tell Commander to reload your `Commander.txt` after you have edited it |
+| Client&nbsp;Teleporting | Whether co-op partners who join your game may use Commander to teleport (they must also be running Commander) |
+| Client&nbsp;Speed&nbsp;Permissions | Whether Co-op partners who join your game cannot adjust the game speed or freeze the world |

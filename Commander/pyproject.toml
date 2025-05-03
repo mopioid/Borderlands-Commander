@@ -1,0 +1,17 @@
+[project]
+name = "Borderlands Commander"
+version = "3.0"
+authors = [{ name = "mopioid" }]
+description = """
+
+"""
+
+[project.urls]
+Homepage = "https://github.com/mopioid/Borderlands-Commander"
+"Bug Tracker" = "https://github.com/mopioid/Borderlands-Commander/issues"
+
+[tool.sdkmod]
+name = "Commander"
+download = "https://github.com/mopioid/Borderlands-Commander/releases"
+supported_games = ["BL1", "BL2", "TPS", "AoDK", "BL3", "WL"]
+coop_support = "RequiresAllPlayers"
