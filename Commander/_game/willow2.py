@@ -108,14 +108,13 @@ def set_player_pc_position(
         player_pc.Pawn.Velocity = make_struct("Vector")
 
 
-FastTravelStation = find_class("FastTravelStation")
-LevelTravelStation = find_class("LevelTravelStation")
-
-
 def get_spawns() -> Sequence[Sequence[Position]]:
     fast_travels: list[Position] = []
     level_transitions: list[Position] = []
     respawns: list[Position] = []
+
+    FastTravelStation = find_class("FastTravelStation")
+    LevelTravelStation = find_class("LevelTravelStation")
 
     for station in find_all("TravelStation", False):
         if (

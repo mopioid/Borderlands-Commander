@@ -28,7 +28,7 @@ except ImportError:
 
 from itertools import chain
 
-from typing import Protocol, Sequence
+from typing import Any, Protocol, Sequence
 
 
 class CommanderModule(Protocol):
@@ -41,7 +41,7 @@ modules: Sequence[CommanderModule] = (_positions, _speed, _custom)
 
 class Commander(mods_base.Mod):
     should_enable = False
-    legacy_guard = False
+    enable_guard = False
 
     def load_settings(self) -> None:
         _custom.load_keybinds()
@@ -69,6 +69,38 @@ class Commander(mods_base.Mod):
         self.options = tuple(
             chain.from_iterable(module.options for module in modules)
         )
+
+        legacy_positions_dict: dict[str, list[dict[str, Any] | None]] = (
+            _positions._positions_dict.value  # pyright: ignore[reportAssignmentType]
+        )
+        ported_positions_dict: dict[str, dict[str, dict[str, Any]]] = dict()
+
+        for (
+            map_name,
+            legacy_map_positions,
+        ) in legacy_positions_dict.items():
+            if not isinstance(
+                legacy_map_positions, list
+            ):  # pyright: ignore[reportUnnecessaryIsInstance]
+                break
+
+            ported_map_positions = ported_positions_dict.setdefault(
+                map_name, dict()
+            )
+            for index, legacy_position in enumerate(legacy_map_positions):
+                if not legacy_position:
+                    continue
+
+                ported_position: dict[str, Any] = dict()
+                for key, value in legacy_position.items():
+                    ported_position[key.lower()] = value
+
+                ported_map_positions[str(index + 1)] = ported_position
+                if not index:
+                    ported_map_positions["10"] = ported_position
+
+        if ported_positions_dict:
+            _positions._positions_dict.value = ported_positions_dict  # pyright: ignore[reportAttributeAccessIssue]
 
         self.enable_guard = False
         if self.should_enable:

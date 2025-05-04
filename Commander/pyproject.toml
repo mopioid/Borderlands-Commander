@@ -1,6 +1,6 @@
 [project]
 name = "Borderlands Commander"
-version = "3.0"
+version = "3.0.1"
 authors = [{ name = "mopioid" }]
 description = """
 A PythonSDK mod for Borderlands series games that provides useful functionality while in-game:
