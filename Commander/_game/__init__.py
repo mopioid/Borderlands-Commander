@@ -2,13 +2,15 @@ from mods_base import Game, Mod
 
 from typing import TYPE_CHECKING
 
+current_game = Game.get_current()
+
 if TYPE_CHECKING:
     from .oak import *
-elif Game.get_current().name == "BL1":
+elif current_game in Game.Willow1:
     from .bl1 import *
-elif Game.get_tree().name == "Willow2":
+elif current_game in Game.Willow2:
     from .willow2 import *
-elif Game.get_tree().name == "Oak":
+elif current_game in Game.Oak:
     from .oak import *
 try:
     from console_mod_menu.screens import screen_stack as console_screens
